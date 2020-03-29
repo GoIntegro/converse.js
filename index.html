@@ -29,6 +29,13 @@
             converse.initialize({
                 auto_away: 300,
                 i18n: 'es',
+                roster_groups: false,
+                show_client_info: false,
+                send_chat_state_notifications:  ['composing'],
+                allow_contact_removal: false,
+                allow_muc: false,
+                
+
                 // keepalive: true,
                 // auto_login: false,
                 // auto_join_rooms: [
@@ -38,7 +45,7 @@
                 // ],
                 // theme: 'concord',
                 // muc_show_logs_before_join: true,
-                websocket_url: 'wss://chat.gointegro.com/xmpp-websocket',
+                // websocket_url: 'wss://chat.gointegro.com/xmpp-websocket',
                 bosh_service_url: 'https://chat.gointegro.com/http-bind', // Please use this connection manager only for testing purposes
                 // whitelisted_plugins: ['converse-debug'],
                 // view_mode: 'fullscreen',
