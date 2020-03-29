@@ -11,7 +11,7 @@ module.exports = merge(common, {
     },
     plugins: [
         new HTMLWebpackPlugin({
-            title: 'go5-chat',
+            title: 'Converse.js Dev',
             template: 'index.html'
         })
     ]
