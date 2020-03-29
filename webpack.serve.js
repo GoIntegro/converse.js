@@ -12,7 +12,7 @@ module.exports = merge(common, {
     plugins: [
         new HTMLWebpackPlugin({
             title: 'Converse.js Dev',
-            template: 'webpack.html'
+            template: 'index.html'
         })
     ]
 });
