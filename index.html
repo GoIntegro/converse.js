@@ -25,15 +25,23 @@
             });
 
             converse.initialize({
-                sticky_controlbox:true,
+                sticky_controlbox: true,
                 auto_away: 300,
                 i18n: 'es',
                 roster_groups: false,
                 show_client_info: false,
-                send_chat_state_notifications:  ['composing'],
+                send_chat_state_notifications: ['composing'],
                 allow_contact_removal: false,
                 allow_muc: false,
-                
+
+                show_toolbar: false,
+                show_send_button:true,
+                visible_toolbar_buttons: {
+                    call: false,
+                    spoiler: false,
+                    emoji: false,
+                    toggle_occupants: false
+                },
 
                 // keepalive: true,
                 // auto_login: false,
