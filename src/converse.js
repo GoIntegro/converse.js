@@ -22,7 +22,7 @@ import "converse-muc-views";       // Views related to MUC
 import "converse-headlines-view";
 import "converse-notification";    // HTML5 Notifications
 import "converse-omemo";
-import "converse-profile";
+// import "converse-profile";
 import "converse-push";            // XEP-0357 Push Notifications
 import "converse-register";        // XEP-0077 In-band registration
 import "converse-roomslist";       // Show currently open chat rooms
@@ -52,7 +52,7 @@ const WHITELISTED_PLUGINS = [
     'converse-headlines-view',
     'converse-notification',
     'converse-omemo',
-    'converse-profile',
+    // 'converse-profile',
     'converse-push',
     'converse-register',
     'converse-roomslist',

@@ -5,7 +5,7 @@
  */
 /* global libsignal */
 
-import "converse-profile";
+// import "converse-profile";
 import { Collection } from "skeletor.js/src/collection";
 import { Model } from 'skeletor.js/src/model.js';
 import { concat, debounce, difference, invokeMap, range, omit } from "lodash";
@@ -69,7 +69,7 @@ converse.plugins.add('converse-omemo', {
         return window.libsignal && !_converse.blacklisted_plugins.includes('converse-omemo') && _converse.config.get('trusted');
     },
 
-    dependencies: ["converse-chatview", "converse-pubsub", "converse-profile"],
+    dependencies: ["converse-chatview", "converse-pubsub"/*, "converse-profile"*/],
 
     overrides: {
 
