@@ -17,7 +17,7 @@ import "converse-dragresize";      // Allows chat boxes to be resized by draggin
 import "converse-emoji-views";
 import "converse-fullscreen";
 import "converse-mam-views";
-import "converse-minimize";        // Allows chat boxes to be minimized
+// import "converse-minimize";        // Allows chat boxes to be minimized
 import "converse-muc-views";       // Views related to MUC
 import "converse-headlines-view";
 import "converse-notification";    // HTML5 Notifications
@@ -46,7 +46,7 @@ const WHITELISTED_PLUGINS = [
     'converse-fullscreen',
     'converse-mam-views',
     'converse-message-view',
-    'converse-minimize',
+    // 'converse-minimize',
     'converse-modal',
     'converse-muc-views',
     'converse-headlines-view',
