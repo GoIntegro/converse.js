@@ -56,6 +56,7 @@ converse.plugins.add('converse-bosh', {
             }
             const xhr = new XMLHttpRequest();
             xhr.open('GET', _converse.prebind_url, true);
+            xhr.setRequestHeader('Authorization', _converse.getAuthorizationToken());
             xhr.setRequestHeader('Accept', 'application/json, text/javascript');
             xhr.onload = async function () {
                 if (xhr.status >= 200 && xhr.status < 400) {

@@ -25,6 +25,10 @@
             });
 
             converse.initialize({
+                getAuthorizationToken: function () {
+                    return "bearer 1234";
+                },
+
                 sticky_controlbox: true,
                 auto_away: 300,
                 i18n: 'es',
@@ -33,7 +37,6 @@
                 send_chat_state_notifications: ['composing'],
                 allow_contact_removal: false,
                 allow_muc: false,
-
                 show_toolbar: false,
                 show_send_button:true,
                 visible_toolbar_buttons: {

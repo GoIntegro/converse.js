@@ -197,6 +197,7 @@ _converse.default_connection_options = { 'explicitResourceBinding': true };
 // Default configuration values
 // ----------------------------
 _converse.default_settings = {
+    getAuthorizationToken: function () {},
     allow_non_roster_messaging: false,
     assets_path: '/dist',
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
