@@ -423,15 +423,17 @@ converse.plugins.add('converse-chatview', {
             },
 
             getHeadingButtons () {
-                const buttons = [{
-                    'a_class': 'show-user-details-modal',
-                    'handler': ev => this.showUserDetailsModal(ev),
-                    'i18n_text': __('Details'),
-                    'i18n_title': __('See more information about this person'),
-                    'icon_class': 'fa-id-card',
-                    'name': 'details',
-                    'standalone': _converse.view_mode === 'overlayed',
-                }];
+                // const buttons = [{
+                //     'a_class': 'show-user-details-modal',
+                //     'handler': ev => this.showUserDetailsModal(ev),
+                //     'i18n_text': __('Details'),
+                //     'i18n_title': __('See more information about this person'),
+                //     'icon_class': 'fa-id-card',
+                //     'name': 'details',
+                //     'standalone': _converse.view_mode === 'overlayed',
+                // }];
+                const buttons = [];
+
                 if (!_converse.singleton) {
                     buttons.push({
                         'a_class': 'close-chatbox-button',
