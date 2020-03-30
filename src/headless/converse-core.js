@@ -5,7 +5,7 @@
  */
 import { __, i18n } from './i18n';
 import { assignIn, debounce, invoke, isFunction, isObject, isString, pick } from 'lodash';
-import { Collection } from "skeletor.js/src/collection";
+import { Collection } from 'skeletor.js/src/collection';
 import { Events } from 'skeletor.js/src/events.js';
 import { Model } from 'skeletor.js/src/model.js';
 import { Router } from 'skeletor.js/src/router.js';
@@ -19,7 +19,7 @@ import dayjs from 'dayjs';
 import log from '@converse/headless/log';
 import pluggable from 'pluggable.js/src/pluggable';
 import sizzle from 'sizzle';
-import stanza_utils from "@converse/headless/utils/stanza";
+import stanza_utils from '@converse/headless/utils/stanza';
 import u from '@converse/headless/utils/core';
 
 const Strophe = strophe.default.Strophe;
@@ -27,7 +27,6 @@ const $build = strophe.default.$build;
 const $iq = strophe.default.$iq;
 const $msg = strophe.default.$msg;
 const $pres = strophe.default.$pres;
-
 
 dayjs.extend(advancedFormat);
 
@@ -97,7 +96,6 @@ const CORE_PLUGINS = [
     'converse-vcard'
 ];
 
-
 /**
  * A private, closured object containing the private api (via {@link _converse.api})
  * as well as private methods and internal data-structures.
@@ -109,14 +107,15 @@ const CORE_PLUGINS = [
 const _converse = {
     'templates': {},
     'promises': {}
-}
+};
 
-_converse.VERSION_NAME = "v6.0.1dev";
+window._converse = _converse;
+
+_converse.VERSION_NAME = 'v6.0.1dev';
 
 Object.assign(_converse, Events);
 
 _converse.router = new Router();
-
 
 /**
  * Custom error for indicating timeouts
@@ -125,23 +124,21 @@ _converse.router = new Router();
 class TimeoutError extends Error {}
 _converse.TimeoutError = TimeoutError;
 
-
 class IllegalMessage extends Error {}
 _converse.IllegalMessage = IllegalMessage;
-
 
 // Make converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');
 
 // Module-level constants
 _converse.STATUS_WEIGHTS = {
-    'offline':      6,
-    'unavailable':  5,
-    'xa':           4,
-    'away':         3,
-    'dnd':          2,
-    'chat':         1, // We currently don't differentiate between "chat" and "online"
-    'online':       1
+    'offline': 6,
+    'unavailable': 5,
+    'xa': 4,
+    'away': 3,
+    'dnd': 2,
+    'chat': 1, // We currently don't differentiate between "chat" and "online"
+    'online': 1
 };
 _converse.ANONYMOUS = 'anonymous';
 _converse.CLOSED = 'closed';
@@ -172,7 +169,8 @@ _converse.FAILURE = 'failure';
 
 // Generated from css/images/user.svg
 _converse.DEFAULT_IMAGE_TYPE = 'image/svg+xml';
-_converse.DEFAULT_IMAGE = "PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCI+CiA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzU1NSIvPgogPGNpcmNsZSBjeD0iNjQiIGN5PSI0MSIgcj0iMjQiIGZpbGw9IiNmZmYiLz4KIDxwYXRoIGQ9Im0yOC41IDExMiB2LTEyIGMwLTEyIDEwLTI0IDI0LTI0IGgyMyBjMTQgMCAyNCAxMiAyNCAyNCB2MTIiIGZpbGw9IiNmZmYiLz4KPC9zdmc+Cg==";
+_converse.DEFAULT_IMAGE =
+    'PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCI+CiA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzU1NSIvPgogPGNpcmNsZSBjeD0iNjQiIGN5PSI0MSIgcj0iMjQiIGZpbGw9IiNmZmYiLz4KIDxwYXRoIGQ9Im0yOC41IDExMiB2LTEyIGMwLTEyIDEwLTI0IDI0LTI0IGgyMyBjMTQgMCAyNCAxMiAyNCAyNCB2MTIiIGZpbGw9IiNmZmYiLz4KPC9zdmc+Cg==';
 
 _converse.TIMEOUTS = {
     // Set as module attr so that we can override in tests.
@@ -188,14 +186,13 @@ _converse.COMPOSING = 'composing';
 _converse.PAUSED = 'paused';
 _converse.GONE = 'gone';
 
-
 // Chat types
 _converse.PRIVATE_CHAT_TYPE = 'chatbox';
 _converse.CHATROOMS_TYPE = 'chatroom';
 _converse.HEADLINES_TYPE = 'headline';
 _converse.CONTROLBOX_TYPE = 'controlbox';
 
-_converse.default_connection_options = {'explicitResourceBinding': true};
+_converse.default_connection_options = { 'explicitResourceBinding': true };
 
 // Default configuration values
 // ----------------------------
@@ -220,9 +217,38 @@ _converse.default_settings = {
     keepalive: true,
     loglevel: 'info',
     locales: [
-        'af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl',
-        'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'mr', 'oc',
-        'pl', 'pt', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW'
+        'af',
+        'ar',
+        'bg',
+        'ca',
+        'cs',
+        'de',
+        'eo',
+        'es',
+        'eu',
+        'en',
+        'fr',
+        'gl',
+        'he',
+        'hi',
+        'hu',
+        'id',
+        'it',
+        'ja',
+        'nb',
+        'nl',
+        'mr',
+        'oc',
+        'pl',
+        'pt',
+        'pt_BR',
+        'ro',
+        'ru',
+        'tr',
+        'uk',
+        'vi',
+        'zh_CN',
+        'zh_TW'
     ],
     message_carbons: true,
     nickname: undefined,
@@ -240,7 +266,6 @@ _converse.default_settings = {
     whitelisted_plugins: []
 };
 
-
 /**
  * Translate the given string based on the current locale.
  * Handles all MUC presence stanzas.
@@ -250,7 +275,6 @@ _converse.default_settings = {
  * @param { String } str - The string to translate
  */
 _converse.__ = __;
-
 
 /**
  * A no-op method which is used to signal to gettext that the passed in string
@@ -268,10 +292,9 @@ _converse.__ = __;
  * @memberOf _converse
  * @param { String } str
  */
-_converse.___ = function (str) {
+_converse.___ = function(str) {
     return str;
-}
-
+};
 
 const PROMISES = [
     'afterResourceBinding',
@@ -281,8 +304,7 @@ const PROMISES = [
     'statusInitialized'
 ];
 
-
-function replacePromise (name) {
+function replacePromise(name) {
     const existing_promise = _converse.promises[name];
     if (!existing_promise) {
         throw new Error(`Tried to replace non-existing promise: ${name}`);
@@ -296,12 +318,11 @@ function replacePromise (name) {
     }
 }
 
-_converse.isTestEnv = function () {
+_converse.isTestEnv = function() {
     return Strophe.Connection.name === 'MockConnection';
-}
+};
 
-
-_converse.haveResumed = function () {
+_converse.haveResumed = function() {
     if (_converse.api.connection.isType('bosh')) {
         return _converse.connfeedback.get('connection_status') === Strophe.Status.ATTACHED;
     } else {
@@ -309,9 +330,9 @@ _converse.haveResumed = function () {
         // This seems very fragile. Perhaps a better way is possible.
         return !_converse.connection.do_bind;
     }
-}
+};
 
-_converse.isUniView = function () {
+_converse.isUniView = function() {
     /* We distinguish between UniView and MultiView instances.
      *
      * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
@@ -320,8 +341,7 @@ _converse.isUniView = function () {
     return ['mobile', 'fullscreen', 'embedded'].includes(_converse.view_mode);
 };
 
-
-async function initSessionStorage () {
+async function initSessionStorage() {
     await Storage.sessionStorageInitialized;
     _converse.storage = {
         'session': Storage.localForage.createInstance({
@@ -332,15 +352,14 @@ async function initSessionStorage () {
     };
 }
 
-
-function initPersistentStorage () {
+function initPersistentStorage() {
     if (_converse.config.get('storage') !== 'persistent') {
         return;
     }
     const config = {
         'name': _converse.isTestEnv() ? 'converse-test-persistent' : 'converse-persistent',
         'storeName': _converse.bare_jid
-    }
+    };
     if (_converse.persistent_store === 'localStorage') {
         config['description'] = 'localStorage instance';
         config['driver'] = [Storage.localForage.LOCALSTORAGE];
@@ -351,14 +370,12 @@ function initPersistentStorage () {
     _converse.storage['persistent'] = Storage.localForage.createInstance(config);
 }
 
-
-_converse.createStore = function (id, storage) {
+_converse.createStore = function(id, storage) {
     const s = _converse.storage[storage ? storage : _converse.config.get('storage')];
     return new Storage(id, s);
-}
+};
 
-
-function initPlugins () {
+function initPlugins() {
     // If initialize gets called a second time (e.g. during tests), then we
     // need to re-apply all plugins (for a new converse instance), and we
     // therefore need to clear this array that prevents plugins from being
@@ -401,7 +418,7 @@ function initPlugins () {
     _converse.api.trigger('pluginsInitialized');
 }
 
-function initClientConfig () {
+function initClientConfig() {
     /* The client config refers to configuration of the client which is
      * independent of any particular user.
      * What this means is that config values need to persist across
@@ -410,10 +427,10 @@ function initClientConfig () {
     const id = 'converse.client-config';
     _converse.config = new Model({
         'id': id,
-        'trusted': _converse.trusted && true || false,
+        'trusted': (_converse.trusted && true) || false,
         'storage': _converse.trusted ? 'persistent' : 'session'
     });
-    _converse.config.browserStorage = _converse.createStore(id, "session");
+    _converse.config.browserStorage = _converse.createStore(id, 'session');
     _converse.config.fetch();
     /**
      * Triggered once the XMPP-client configuration has been initialized.
@@ -427,9 +444,8 @@ function initClientConfig () {
     _converse.api.trigger('clientConfigInitialized');
 }
 
-
-async function tearDown () {
-    await _converse.api.trigger('beforeTearDown', {'synchronous': true});
+async function tearDown() {
+    await _converse.api.trigger('beforeTearDown', { 'synchronous': true });
     window.removeEventListener('click', _converse.onUserActivity);
     window.removeEventListener('focus', _converse.onUserActivity);
     window.removeEventListener('keypress', _converse.onUserActivity);
@@ -440,8 +456,7 @@ async function tearDown () {
     return _converse;
 }
 
-
-async function attemptNonPreboundSession (credentials, automatic) {
+async function attemptNonPreboundSession(credentials, automatic) {
     if (_converse.authentication === _converse.LOGIN) {
         // XXX: If EITHER ``keepalive`` or ``auto_login`` is ``true`` and
         // ``authentication`` is set to ``login``, then Converse will try to log the user in,
@@ -460,21 +475,25 @@ async function attemptNonPreboundSession (credentials, automatic) {
         } else if (!_converse.isTestEnv() && 'credentials' in navigator) {
             connect(await getLoginCredentialsFromBrowser());
         } else {
-            log.warn("attemptNonPreboundSession: Could not find any credentials to log in with");
+            log.warn('attemptNonPreboundSession: Could not find any credentials to log in with');
         }
-    } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication) && (!automatic || _converse.auto_login)) {
+    } else if (
+        [_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication) &&
+        (!automatic || _converse.auto_login)
+    ) {
         connect();
     }
 }
 
-
-function connect (credentials) {
+function connect(credentials) {
     if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication)) {
         if (!_converse.jid) {
-            throw new Error("Config Error: when using anonymous login " +
-                "you need to provide the server's domain via the 'jid' option. " +
-                "Either when calling converse.initialize, or when calling " +
-                "_converse.api.user.login.");
+            throw new Error(
+                'Config Error: when using anonymous login ' +
+                    "you need to provide the server's domain via the 'jid' option. " +
+                    'Either when calling converse.initialize, or when calling ' +
+                    '_converse.api.user.login.'
+            );
         }
         if (!_converse.connection.reconnecting) {
             _converse.connection.reset();
@@ -486,11 +505,15 @@ function connect (credentials) {
             BOSH_WAIT
         );
     } else if (_converse.authentication === _converse.LOGIN) {
-        const password = credentials ? credentials.password : (_converse.connection?.pass || _converse.password);
+        const password = credentials
+            ? credentials.password
+            : _converse.connection?.pass || _converse.password;
         if (!password) {
             if (_converse.auto_login) {
-                throw new Error("autoLogin: If you use auto_login and "+
-                    "authentication='login' then you also need to provide a password.");
+                throw new Error(
+                    'autoLogin: If you use auto_login and ' +
+                        "authentication='login' then you also need to provide a password."
+                );
             }
             _converse.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
             _converse.api.connection.disconnect();
@@ -499,12 +522,16 @@ function connect (credentials) {
         if (!_converse.connection.reconnecting) {
             _converse.connection.reset();
         }
-        _converse.connection.connect(_converse.jid, password, _converse.onConnectStatusChanged, BOSH_WAIT);
+        _converse.connection.connect(
+            _converse.jid,
+            password,
+            _converse.onConnectStatusChanged,
+            BOSH_WAIT
+        );
     }
 }
 
-
-async function reconnect () {
+async function reconnect() {
     log.debug('RECONNECTING: the connection has dropped, attempting to reconnect.');
     _converse.setConnectionStatus(
         Strophe.Status.RECONNECTING,
@@ -525,10 +552,9 @@ async function reconnect () {
 
 const debouncedReconnect = debounce(reconnect, 2000);
 
+_converse.shouldClearCache = () => !_converse.config.get('trusted') || _converse.isTestEnv();
 
-_converse.shouldClearCache = () => (!_converse.config.get('trusted') || _converse.isTestEnv());
-
-function clearSession  () {
+function clearSession() {
     if (_converse.session !== undefined) {
         _converse.session.destroy();
         delete _converse.session;
@@ -539,15 +565,14 @@ function clearSession  () {
      * disconnected for some other reason.
      * @event _converse#clearSession
      */
-    return _converse.api.trigger('clearSession', {'synchronous': true});
+    return _converse.api.trigger('clearSession', { 'synchronous': true });
 }
 
-
-async function onDomainDiscovered (response) {
+async function onDomainDiscovered(response) {
     const text = await response.text();
-    const xrd = (new window.DOMParser()).parseFromString(text, "text/xml").firstElementChild;
-    if (xrd.nodeName != "XRD" || xrd.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0") {
-        return log.warn("Could not discover XEP-0156 connection methods");
+    const xrd = new window.DOMParser().parseFromString(text, 'text/xml').firstElementChild;
+    if (xrd.nodeName != 'XRD' || xrd.namespaceURI != 'http://docs.oasis-open.org/ns/xri/xrd-1.0') {
+        return log.warn('Could not discover XEP-0156 connection methods');
     }
     const bosh_links = sizzle(`Link[rel="urn:xmpp:alt-connections:xbosh"]`, xrd);
     const ws_links = sizzle(`Link[rel="urn:xmpp:alt-connections:websocket"]`, xrd);
@@ -558,15 +583,14 @@ async function onDomainDiscovered (response) {
     _converse.bosh_service_url = bosh_methods.pop();
     if (bosh_methods.length === 0 && ws_methods.length === 0) {
         log.warn(
-            "onDomainDiscovered: neither BOSH nor WebSocket connection methods have been specified with XEP-0156."
+            'onDomainDiscovered: neither BOSH nor WebSocket connection methods have been specified with XEP-0156.'
         );
     }
 }
 
-
 /* Use XEP-0156 to check whether this host advertises websocket or BOSH connection methods.
  */
-async function discoverConnectionMethods (domain) {
+async function discoverConnectionMethods(domain) {
     const options = {
         'mode': 'cors',
         'headers': {
@@ -585,21 +609,24 @@ async function discoverConnectionMethods (domain) {
     if (response.status >= 200 && response.status < 400) {
         await onDomainDiscovered(response);
     } else {
-        log.warn("Could not discover XEP-0156 connection methods");
+        log.warn('Could not discover XEP-0156 connection methods');
     }
 }
 
-
-_converse.initConnection = async function (domain) {
+_converse.initConnection = async function(domain) {
     if (_converse.discover_connection_methods) {
         await discoverConnectionMethods(domain);
     }
-    if (! _converse.bosh_service_url) {
+    if (!_converse.bosh_service_url) {
         if (_converse.authentication === _converse.PREBIND) {
-            throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
+            throw new Error(
+                "authentication is set to 'prebind' but we don't have a BOSH connection"
+            );
         }
-        if (! _converse.websocket_url) {
-            throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+        if (!_converse.websocket_url) {
+            throw new Error(
+                'initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.'
+            );
         }
     }
 
@@ -611,15 +638,15 @@ _converse.initConnection = async function (domain) {
     } else if (_converse.bosh_service_url) {
         _converse.connection = new Strophe.Connection(
             _converse.bosh_service_url,
-            Object.assign(
-                _converse.default_connection_options,
-                _converse.connection_options,
-                {'keepalive': _converse.keepalive}
-            )
+            Object.assign(_converse.default_connection_options, _converse.connection_options, {
+                'keepalive': _converse.keepalive
+            })
         );
     } else {
-        throw new Error("initConnection: this browser does not support "+
-                        "websockets and bosh_service_url wasn't specified.");
+        throw new Error(
+            'initConnection: this browser does not support ' +
+                "websockets and bosh_service_url wasn't specified."
+        );
     }
     setUpXMLLogging();
     /**
@@ -629,19 +656,18 @@ _converse.initConnection = async function (domain) {
      * @event _converse#connectionInitialized
      */
     _converse.api.trigger('connectionInitialized');
-}
+};
 
-
-async function initSession (jid) {
+async function initSession(jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const id = `converse.session-${bare_jid}`;
     if (!_converse.session || _converse.session.get('id') !== id) {
-        _converse.session = new Model({id});
-        _converse.session.browserStorage = _converse.createStore(id, "session");
-        await new Promise(r => _converse.session.fetch({'success': r, 'error': r}));
+        _converse.session = new Model({ id });
+        _converse.session.browserStorage = _converse.createStore(id, 'session');
+        await new Promise(r => _converse.session.fetch({ 'success': r, 'error': r }));
         if (_converse.session.get('active')) {
             _converse.session.clear();
-            _converse.session.save({id});
+            _converse.session.save({ id });
         }
         saveJIDtoSession(jid);
         initPersistentStorage();
@@ -657,8 +683,7 @@ async function initSession (jid) {
     }
 }
 
-
-function saveJIDtoSession (jid) {
+function saveJIDtoSession(jid) {
     jid = _converse.session.get('jid') || jid;
     if (_converse.authentication !== _converse.ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + _converse.generateResource();
@@ -668,17 +693,16 @@ function saveJIDtoSession (jid) {
     _converse.resource = Strophe.getResourceFromJid(jid);
     _converse.domain = Strophe.getDomainFromJid(jid);
     _converse.session.save({
-       'jid': jid,
-       'bare_jid': _converse.bare_jid,
-       'resource': _converse.resource,
-       'domain': _converse.domain,
-       'active': true
+        'jid': jid,
+        'bare_jid': _converse.bare_jid,
+        'resource': _converse.resource,
+        'domain': _converse.domain,
+        'active': true
     });
     // Set JID on the connection object so that when we call `connection.bind`
     // the new resource is found by Strophe.js and sent to the XMPP server.
     _converse.connection.jid = jid;
 }
-
 
 /**
  * Stores the passed in JID for the current user, potentially creating a
@@ -693,9 +717,9 @@ function saveJIDtoSession (jid) {
  * @emits _converse#setUserJID
  * @params { String } jid
  */
-_converse.setUserJID = async function (jid) {
+_converse.setUserJID = async function(jid) {
     if (!_converse.connection || !u.isSameDomain(_converse.connection.jid, jid)) {
-        const domain = Strophe.getDomainFromJid(jid)
+        const domain = Strophe.getDomainFromJid(jid);
         await _converse.initConnection(domain);
     }
     await initSession(jid);
@@ -705,35 +729,42 @@ _converse.setUserJID = async function (jid) {
      */
     _converse.api.trigger('setUserJID');
     return jid;
-}
+};
 
-
-function enableCarbons () {
+function enableCarbons() {
     /* Ask the XMPP server to enable Message Carbons
      * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
      */
-    if (!_converse.message_carbons || !_converse.session || _converse.session.get('carbons_enabled')) {
+    if (
+        !_converse.message_carbons ||
+        !_converse.session ||
+        _converse.session.get('carbons_enabled')
+    ) {
         return;
     }
     const carbons_iq = new Strophe.Builder('iq', {
         'from': _converse.connection.jid,
         'id': 'enablecarbons',
         'type': 'set'
-      })
-      .c('enable', {xmlns: Strophe.NS.CARBONS});
-    _converse.connection.addHandler((iq) => {
-        if (iq.querySelectorAll('error').length > 0) {
-            log.warn('An error occurred while trying to enable message carbons.');
-        } else {
-            _converse.session.save({'carbons_enabled': true});
-            log.debug('Message carbons have been enabled.');
-        }
-    }, null, "iq", null, "enablecarbons");
+    }).c('enable', { xmlns: Strophe.NS.CARBONS });
+    _converse.connection.addHandler(
+        iq => {
+            if (iq.querySelectorAll('error').length > 0) {
+                log.warn('An error occurred while trying to enable message carbons.');
+            } else {
+                _converse.session.save({ 'carbons_enabled': true });
+                log.debug('Message carbons have been enabled.');
+            }
+        },
+        null,
+        'iq',
+        null,
+        'enablecarbons'
+    );
     _converse.connection.send(carbons_iq);
 }
 
-
-async function onConnected (reconnecting) {
+async function onConnected(reconnecting) {
     /* Called as soon as a new connection has been established, either
      * by logging in or by attaching to an existing BOSH session.
      */
@@ -746,7 +777,7 @@ async function onConnected (reconnecting) {
      * user's JID resource for this session.
      * @event _converse#afterResourceBinding
      */
-    await _converse.api.trigger('afterResourceBinding', reconnecting, {'synchronous': true});
+    await _converse.api.trigger('afterResourceBinding', reconnecting, { 'synchronous': true });
     enableCarbons();
 
     if (reconnecting) {
@@ -772,12 +803,10 @@ async function onConnected (reconnecting) {
          */
         _converse.api.trigger('connected');
     }
-
 }
 
-
-function setUpXMLLogging () {
-    const lmap = {}
+function setUpXMLLogging() {
+    const lmap = {};
     lmap[Strophe.LogLevel.DEBUG] = 'debug';
     lmap[Strophe.LogLevel.INFO] = 'info';
     lmap[Strophe.LogLevel.WARN] = 'warn';
@@ -785,14 +814,13 @@ function setUpXMLLogging () {
     lmap[Strophe.LogLevel.FATAL] = 'fatal';
 
     Strophe.log = (level, msg) => log.log(msg, lmap[level]);
-    Strophe.error = (msg) => log.error(msg);
+    Strophe.error = msg => log.error(msg);
 
     _converse.connection.xmlInput = body => log.debug(body.outerHTML, 'color: darkgoldenrod');
     _converse.connection.xmlOutput = body => log.debug(body.outerHTML, 'color: darkcyan');
 }
 
-
-async function finishInitialization () {
+async function finishInitialization() {
     await initSessionStorage();
     initClientConfig();
     initPlugins();
@@ -806,12 +834,13 @@ async function finishInitialization () {
             _converse.api.disco.own.features.add(Strophe.NS.IDLE);
         });
     }
-    if (_converse.auto_login ||
-            _converse.keepalive && invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
+    if (
+        _converse.auto_login ||
+        (_converse.keepalive && invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled'))
+    ) {
         await _converse.api.user.login(null, null, true);
     }
 }
-
 
 /**
  * Properly tear down the session so that it's possible to manually connect again.
@@ -819,7 +848,7 @@ async function finishInitialization () {
  * @emits _converse#disconnected
  * @private
  */
-async function finishDisconnection () {
+async function finishDisconnection() {
     log.debug('DISCONNECTED');
     delete _converse.connection.reconnecting;
     _converse.connection.reset();
@@ -835,8 +864,7 @@ async function finishDisconnection () {
     _converse.api.trigger('disconnected');
 }
 
-
-function fetchLoginCredentials (wait=0) {
+function fetchLoginCredentials(wait = 0) {
     return new Promise(
         debounce((resolve, reject) => {
             const xhr = new XMLHttpRequest();
@@ -861,7 +889,7 @@ function fetchLoginCredentials (wait=0) {
     );
 }
 
-async function getLoginCredentials () {
+async function getLoginCredentials() {
     let credentials;
     let wait = 0;
     while (!credentials) {
@@ -878,53 +906,52 @@ async function getLoginCredentials () {
     return credentials;
 }
 
-async function getLoginCredentialsFromBrowser () {
+async function getLoginCredentialsFromBrowser() {
     try {
-        const creds = await navigator.credentials.get({'password': true});
+        const creds = await navigator.credentials.get({ 'password': true });
         if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
             await _converse.setUserJID(creds.id);
-            return {'jid': creds.id, 'password': creds.password};
+            return { 'jid': creds.id, 'password': creds.password };
         }
     } catch (e) {
         log.error(e);
     }
 }
 
-_converse.saveWindowState = function (ev) {
+_converse.saveWindowState = function(ev) {
     // XXX: eventually we should be able to just use
     // document.visibilityState (when we drop support for older
     // browsers).
     let state;
     const event_map = {
-        'focus': "visible",
-        'focusin': "visible",
-        'pageshow': "visible",
-        'blur': "hidden",
-        'focusout': "hidden",
-        'pagehide': "hidden"
+        'focus': 'visible',
+        'focusin': 'visible',
+        'pageshow': 'visible',
+        'blur': 'hidden',
+        'focusout': 'hidden',
+        'pagehide': 'hidden'
     };
     ev = ev || document.createEvent('Events');
     if (ev.type in event_map) {
         state = event_map[ev.type];
     } else {
-        state = document.hidden ? "hidden" : "visible";
+        state = document.hidden ? 'hidden' : 'visible';
     }
     _converse.windowState = state;
     /**
-        * Triggered when window state has changed.
-        * Used to determine when a user left the page and when came back.
-        * @event _converse#windowStateChanged
-        * @type { object }
-        * @property{ string } state - Either "hidden" or "visible"
-        * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
-        */
-    _converse.api.trigger('windowStateChanged', {state});
-}
+     * Triggered when window state has changed.
+     * Used to determine when a user left the page and when came back.
+     * @event _converse#windowStateChanged
+     * @type { object }
+     * @property{ string } state - Either "hidden" or "visible"
+     * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
+     */
+    _converse.api.trigger('windowStateChanged', { state });
+};
 
-
-function registerGlobalEventHandlers () {
-    document.addEventListener("visibilitychange", _converse.saveWindowState);
-    _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
+function registerGlobalEventHandlers() {
+    document.addEventListener('visibilitychange', _converse.saveWindowState);
+    _converse.saveWindowState({ 'type': document.hidden ? 'blur' : 'focus' }); // Set initial state
     /**
      * Called once Converse has registered its global event handlers
      * (for events such as window resize or unload).
@@ -936,14 +963,12 @@ function registerGlobalEventHandlers () {
     _converse.api.trigger('registeredGlobalEventHandlers');
 }
 
-
-function unregisterGlobalEventHandlers () {
-    document.removeEventListener("visibilitychange", _converse.saveWindowState);
+function unregisterGlobalEventHandlers() {
+    document.removeEventListener('visibilitychange', _converse.saveWindowState);
     _converse.api.trigger('unregisteredGlobalEventHandlers');
 }
 
-
-function cleanup () {
+function cleanup() {
     // Make sure everything is reset in case this is a subsequent call to
     // convesre.initialize (happens during tests).
     _converse.router.history.stop();
@@ -959,8 +984,7 @@ function cleanup () {
     _converse.off();
 }
 
-
-_converse.initialize = async function (settings, callback) {
+_converse.initialize = async function(settings, callback) {
     cleanup();
 
     settings = settings !== undefined ? settings : {};
@@ -989,15 +1013,16 @@ _converse.initialize = async function (settings, callback) {
 
     if (this.authentication === _converse.ANONYMOUS) {
         if (this.auto_login && !this.jid) {
-            throw new Error("Config Error: you need to provide the server's " +
-                  "domain via the 'jid' option when using anonymous " +
-                  "authentication with auto_login.");
+            throw new Error(
+                "Config Error: you need to provide the server's " +
+                    "domain via the 'jid' option when using anonymous " +
+                    'authentication with auto_login.'
+            );
         }
     }
 
-    _converse.router.route(
-        /^converse\?loglevel=(debug|info|warn|error|fatal)$/, 'loglevel',
-        l => log.setLogLevel(l)
+    _converse.router.route(/^converse\?loglevel=(debug|info|warn|error|fatal)$/, 'loglevel', l =>
+        log.setLogLevel(l)
     );
 
     /* Localisation */
@@ -1015,7 +1040,7 @@ _converse.initialize = async function (settings, callback) {
 
     // Module-level variables
     // ----------------------
-    this.callback = callback || function noop () {};
+    this.callback = callback || function noop() {};
     /* When reloading the page:
      * For new sessions, we need to send out a presence stanza to notify
      * the server/network that we're online.
@@ -1029,9 +1054,10 @@ _converse.initialize = async function (settings, callback) {
     // Module-level functions
     // ----------------------
 
-    this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
+    this.generateResource = () =>
+        `/converse.js-${Math.floor(Math.random() * 139749528).toString()}`;
 
-    this.setConnectionStatus = function (connection_status, message) {
+    this.setConnectionStatus = function(connection_status, message) {
         _converse.connfeedback.set({
             'connection_status': connection_status,
             'message': message
@@ -1046,10 +1072,13 @@ _converse.initialize = async function (settings, callback) {
      * @private
      * @memberOf _converse
      */
-    this.onDisconnected = function () {
+    this.onDisconnected = function() {
         const reason = _converse.disconnection_reason;
         if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
-            if (_converse.auto_reconnect && (_converse.credentials_url || _converse.authentication === _converse.ANONYMOUS)) {
+            if (
+                _converse.auto_reconnect &&
+                (_converse.credentials_url || _converse.authentication === _converse.ANONYMOUS)
+            ) {
                 /**
                  * If `credentials_url` is set, we reconnect, because we might
                  * be receiving expirable tokens from the credentials_url.
@@ -1062,18 +1091,19 @@ _converse.initialize = async function (settings, callback) {
             } else {
                 return finishDisconnection();
             }
-        } else if (_converse.disconnection_cause === _converse.LOGOUT ||
-                (reason !== undefined && reason === Strophe?.ErrorCondition.NO_AUTH_MECH) ||
-                reason === "host-unknown" ||
-                reason === "remote-connection-failed" ||
-                !_converse.auto_reconnect) {
+        } else if (
+            _converse.disconnection_cause === _converse.LOGOUT ||
+            (reason !== undefined && reason === Strophe?.ErrorCondition.NO_AUTH_MECH) ||
+            reason === 'host-unknown' ||
+            reason === 'remote-connection-failed' ||
+            !_converse.auto_reconnect
+        ) {
             return finishDisconnection();
         }
         _converse.api.connection.reconnect();
     };
 
-
-    this.setDisconnectionCause = function (cause, reason, override) {
+    this.setDisconnectionCause = function(cause, reason, override) {
         /* Used to keep track of why we got disconnected, so that we can
          * decide on what the next appropriate action is (in onDisconnected)
          */
@@ -1094,7 +1124,7 @@ _converse.initialize = async function (settings, callback) {
      * @private
      * @memberOf _converse
      */
-    this.onConnectStatusChanged = function (status, message) {
+    this.onConnectStatusChanged = function(status, message) {
         log.debug(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
         if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
             _converse.setConnectionStatus(status);
@@ -1136,11 +1166,13 @@ _converse.initialize = async function (settings, callback) {
             _converse.onDisconnected();
         } else if (status === Strophe.Status.CONNFAIL) {
             let feedback = message;
-            if (message === "host-unknown" || message == "remote-connection-failed") {
-                feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s",
-                    `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`);
+            if (message === 'host-unknown' || message == 'remote-connection-failed') {
+                feedback = __(
+                    'Sorry, we could not connect to the XMPP host with domain: %1$s',
+                    `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`
+                );
             } else if (message !== undefined && message === Strophe?.ErrorCondition?.NO_AUTH_MECH) {
-                feedback = __("The XMPP server did not offer a supported authentication mechanism");
+                feedback = __('The XMPP server did not offer a supported authentication mechanism');
             }
             _converse.setConnectionStatus(status, feedback);
             _converse.setDisconnectionCause(status, message);
@@ -1149,13 +1181,13 @@ _converse.initialize = async function (settings, callback) {
         }
     };
 
-    this.bindResource = async function () {
+    this.bindResource = async function() {
         /**
          * Synchronous event triggered before we send an IQ to bind the user's
          * JID resource for this session.
          * @event _converse#beforeResourceBinding
          */
-        await _converse.api.trigger('beforeResourceBinding', {'synchronous': true});
+        await _converse.api.trigger('beforeResourceBinding', { 'synchronous': true });
         _converse.connection.bind();
     };
 
@@ -1165,7 +1197,7 @@ _converse.initialize = async function (settings, callback) {
             'message': ''
         },
 
-        initialize () {
+        initialize() {
             this.on('change', () => _converse.api.trigger('connfeedback', _converse.connfeedback));
         }
     });
@@ -1205,7 +1237,7 @@ _converse.api = {
          * @memberOf _converse.api.connection
          * @returns {boolean} Whether there is an established connection or not.
          */
-        connected () {
+        connected() {
             return _converse?.connection?.connected && true;
         },
 
@@ -1215,7 +1247,7 @@ _converse.api = {
          * @method _converse.api.connection.disconnectkjjjkk
          * @memberOf _converse.api.connection
          */
-        disconnect () {
+        disconnect() {
             if (_converse.connection) {
                 _converse.connection.disconnect();
             }
@@ -1230,7 +1262,7 @@ _converse.api = {
          * @method reconnect
          * @memberOf _converse.api.connection
          */
-        async reconnect () {
+        async reconnect() {
             const conn_status = _converse.connfeedback.get('connection_status');
 
             if (_converse.authentication === _converse.ANONYMOUS) {
@@ -1263,7 +1295,10 @@ _converse.api = {
                     _converse.connection.service = _converse.websocket_url;
                 }
             }
-            if (conn_status === Strophe.Status.AUTHFAIL && _converse.authentication === _converse.ANONYMOUS) {
+            if (
+                conn_status === Strophe.Status.AUTHFAIL &&
+                _converse.authentication === _converse.ANONYMOUS
+            ) {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
@@ -1282,7 +1317,7 @@ _converse.api = {
          * @memberOf _converse.api.connection
          * @returns {boolean}
          */
-        isType (type) {
+        isType(type) {
             if (type.toLowerCase() === 'websocket') {
                 return _converse.connection._proto instanceof Strophe.Websocket;
             } else if (type.toLowerCase() === 'bosh') {
@@ -1307,7 +1342,7 @@ _converse.api = {
      *  by {@link _converse.api.trigger} which resolves once all the
      *  event handlers' promises have been resolved.
      */
-    async trigger (name) {
+    async trigger(name) {
         const args = Array.from(arguments);
         const options = args.pop();
         if (options && options.synchronous) {
@@ -1334,7 +1369,7 @@ _converse.api = {
          * @returns {string} The current user's full JID (Jabber ID)
          * @example _converse.api.user.jid())
          */
-        jid () {
+        jid() {
             return _converse.connection.jid;
         },
 
@@ -1354,7 +1389,7 @@ _converse.api = {
          *  to determine whether Converse should try to log the user in if it
          *  fails to restore a previous auth'd session.
          */
-        async login (jid, password, automatic=false) {
+        async login(jid, password, automatic = false) {
             if (jid || _converse.jid) {
                 jid = await _converse.setUserJID(jid || _converse.jid);
             }
@@ -1364,13 +1399,16 @@ _converse.api = {
             if (bosh_plugin && bosh_plugin.enabled()) {
                 if (await _converse.restoreBOSHSession()) {
                     return;
-                } else if (_converse.authentication === _converse.PREBIND && (!automatic || _converse.auto_login)) {
+                } else if (
+                    _converse.authentication === _converse.PREBIND &&
+                    (!automatic || _converse.auto_login)
+                ) {
                     return _converse.startNewPreboundBOSHSession();
                 }
             }
 
             password = password || _converse.password;
-            const credentials = (jid && password) ? { jid, password } : null;
+            const credentials = jid && password ? { jid, password } : null;
             attemptNonPreboundSession(credentials, automatic);
         },
 
@@ -1379,19 +1417,19 @@ _converse.api = {
          * @method _converse.api.user.logout
          * @example _converse.api.user.logout();
          */
-        logout () {
+        logout() {
             const promise = u.getResolveablePromise();
             const complete = () => {
                 // Recreate all the promises
                 Object.keys(_converse.promises).forEach(replacePromise);
-                delete _converse.jid
+                delete _converse.jid;
                 /**
                  * Triggered once the user has logged out.
                  * @event _converse#logout
                  */
                 _converse.api.trigger('logout');
                 promise.resolve();
-            }
+            };
 
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (_converse.connection !== undefined) {
@@ -1430,7 +1468,7 @@ _converse.api = {
          *     'enable_foo': false
          * });
          */
-        update (settings) {
+        update(settings) {
             u.merge(_converse.default_settings, settings);
             u.merge(_converse, settings);
             u.applyUserSettings(_converse, settings, _converse.user_settings);
@@ -1440,7 +1478,7 @@ _converse.api = {
          * @returns {*} Value of the particular configuration setting.
          * @example _converse.api.settings.get("play_sounds");
          */
-        get (key) {
+        get(key) {
             if (Object.keys(_converse.default_settings).includes(key)) {
                 return _converse[key];
             }
@@ -1463,7 +1501,7 @@ _converse.api = {
          *     "hide_offline_users" true
          * });
          */
-        set (key, val) {
+        set(key, val) {
             const o = {};
             if (isObject(key)) {
                 assignIn(_converse, pick(key, Object.keys(_converse.default_settings)));
@@ -1519,7 +1557,7 @@ _converse.api = {
          * @param {boolean} [replace=true] Whether this promise should be replaced with a new one when the user logs out.
          * @example _converse.api.promises.add('foo-completed');
          */
-        add (promises, replace=true) {
+        add(promises, replace = true) {
             promises = Array.isArray(promises) ? promises : [promises];
             promises.forEach(name => {
                 const promise = u.getResolveablePromise();
@@ -1584,7 +1622,7 @@ _converse.api = {
          * @param {object} options Matching options (e.g. 'ns' for namespace, 'type' for stanza type, also 'id' and 'from');
          * @param {function} handler The callback method to be called when the stanza appears
          */
-        stanza (name, options, handler) {
+        stanza(name, options, handler) {
             if (isFunction(options)) {
                 handler = options;
                 options = {};
@@ -1611,7 +1649,7 @@ _converse.api = {
      * or a function which should eventually return a truthy value.
      * @returns {Promise}
      */
-    waitUntil (condition) {
+    waitUntil(condition) {
         if (isFunction(condition)) {
             return u.waitUntil(condition);
         } else {
@@ -1634,7 +1672,7 @@ _converse.api = {
      * });
      * _converse.api.send(msg);
      */
-    send (stanza) {
+    send(stanza) {
         if (!_converse.api.connection.connected()) {
             log.warn("Not sending stanza because we're not connected!");
             log.warn(Strophe.serialize(stanza));
@@ -1661,19 +1699,22 @@ _converse.api = {
      * @returns {Promise} A promise which resolves when we receive a `result` stanza
      * or is rejected when we receive an `error` stanza.
      */
-    sendIQ (stanza, timeout, reject=true) {
+    sendIQ(stanza, timeout, reject = true) {
         timeout = timeout || _converse.STANZA_TIMEOUT;
         let promise;
         if (reject) {
-            promise = new Promise((resolve, reject) => _converse.connection.sendIQ(stanza, resolve, reject, timeout));
+            promise = new Promise((resolve, reject) =>
+                _converse.connection.sendIQ(stanza, resolve, reject, timeout)
+            );
         } else {
-            promise = new Promise(resolve => _converse.connection.sendIQ(stanza, resolve, resolve, timeout));
+            promise = new Promise(resolve =>
+                _converse.connection.sendIQ(stanza, resolve, resolve, timeout)
+            );
         }
         _converse.api.trigger('send', stanza);
         return promise;
     }
 };
-
 
 window.converse = window.converse || {};
 
@@ -1691,7 +1732,6 @@ window.converse = window.converse || {};
  * @namespace converse
  */
 Object.assign(window.converse, {
-
     CHAT_STATES: ['active', 'composing', 'gone', 'inactive', 'paused'],
 
     keycodes: {
@@ -1730,7 +1770,7 @@ Object.assign(window.converse, {
      *     roster_groups: true
      * });
      */
-    initialize (settings, callback) {
+    initialize(settings, callback) {
         return _converse.initialize(settings, callback);
     },
     /**
@@ -1761,7 +1801,7 @@ Object.assign(window.converse, {
          *  }
          *  converse.plugins.add('myplugin', plugin);
          */
-        add (name, plugin) {
+        add(name, plugin) {
             plugin.__name__ = name;
             if (_converse.pluggable.plugins[name] !== undefined) {
                 throw new TypeError(
@@ -1771,7 +1811,6 @@ Object.assign(window.converse, {
                 _converse.pluggable.plugins[name] = plugin;
             }
         }
-
     },
     /**
      * Utility methods and globals from bundled 3rd party libraries.
@@ -1789,7 +1828,23 @@ Object.assign(window.converse, {
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
      * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
      */
-    'env': { $build, $iq, $msg, $pres, Model, Collection, Promise, Strophe, _, dayjs, log, sizzle, stanza_utils, u, 'utils': u }
+    'env': {
+        $build,
+        $iq,
+        $msg,
+        $pres,
+        Model,
+        Collection,
+        Promise,
+        Strophe,
+        _,
+        dayjs,
+        log,
+        sizzle,
+        stanza_utils,
+        u,
+        'utils': u
+    }
 });
 
 /**
