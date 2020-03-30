@@ -27,6 +27,9 @@
             });
 
             converse.initialize({
+                getAuthorizationToken: function() {
+                    return 'bearer 1234';
+                },
                 auto_away: 300,
                 i18n: 'es',
                 // keepalive: true,
@@ -45,9 +48,10 @@
                 // notify_all_room_messages: [
                 //     'discuss@conference.conversejs.org'
                 // ],
-                // jid: 'cristian.soto@chat.gointegro.com',
-                authentication: 'login',
-                // prebind_url: 'http://chat.gointegro.com/prebind',
+                authentication: 'prebind',
+                // jid: '3576@18',
+                auto_login: true,
+                prebind_url: 'http://localhost:3000/prebind',
                 enable_smacks: true,
                 persistent_store: 'IndexedDB',
                 muc_respect_autojoin: true,
