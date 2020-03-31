@@ -367,6 +367,7 @@ converse.plugins.add('converse-controlbox', {
             },
 
             initialize () {
+                window.connect = this.connect.bind(this);
                 this.listenTo(this.model, 'change', this.render)
                 this.listenTo(_converse.connfeedback, 'change', this.render);
                 this.render();

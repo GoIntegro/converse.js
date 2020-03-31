@@ -433,19 +433,19 @@ converse.plugins.add('converse-roster', {
                     this.data.save('version', undefined);
                 }
 
-                if (_converse.session.get('roster_cached')) {
-                    /**
-                     * The contacts roster has been retrieved from the local cache (`sessionStorage`).
-                     * @event _converse#cachedRoster
-                     * @type { _converse.RosterContacts }
-                     * @example _converse.api.listen.on('cachedRoster', (items) => { ... });
-                     * @example _converse.api.waitUntil('cachedRoster').then(items => { ... });
-                     */
-                    _converse.api.trigger('cachedRoster', result);
-                } else {
+                // if (_converse.session.get('roster_cached')) {
+                //     /**
+                //      * The contacts roster has been retrieved from the local cache (`sessionStorage`).
+                //      * @event _converse#cachedRoster
+                //      * @type { _converse.RosterContacts }
+                //      * @example _converse.api.listen.on('cachedRoster', (items) => { ... });
+                //      * @example _converse.api.waitUntil('cachedRoster').then(items => { ... });
+                //      */
+                //     _converse.api.trigger('cachedRoster', result);
+                // } else {
                     _converse.send_initial_presence = true;
                     return _converse.roster.fetchFromServer();
-                }
+                // }
             },
 
             subscribeToSuggestedItems (msg) {

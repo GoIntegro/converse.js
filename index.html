@@ -28,6 +28,7 @@
                 getAuthorizationToken: function() {
                     return 'bearer ' + window.prompt('ingrese accessToken (sin bearer):');
                 },
+                persistent_store: false,
 
                 sticky_controlbox: true,
                 auto_away: 300,
@@ -63,7 +64,7 @@
                 //     'discuss@conference.conversejs.org'
                 // ],
                 // jid: 'cristian.soto@chat.gointegro.com',
-                prebind: true,
+                prebind: false,
                 auto_login: true,
                 authentication: 'login',
                 credentials_url: 'http://api.qa.go5.gointegro.net/prebind',
