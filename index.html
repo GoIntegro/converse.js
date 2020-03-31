@@ -63,19 +63,20 @@
                 //     'discuss@conference.conversejs.org'
                 // ],
                 // jid: 'cristian.soto@chat.gointegro.com',
-                auto_login: true,
-                prebind: true,
+                // prebind: true,
+                //auto_login: true,
                 authentication: 'login',
-                jid: "9@18",
-                password:"12345678",
-                //prebind_url: 'http://api.qa.go5.gointegro.net/prebind',
+                credentials_url: 'http://api.qa.go5.gointegro.net/prebind',
                 enable_smacks: true,
                 persistent_store: 'IndexedDB',
                 show_send_button: true,
                 // muc_respect_autojoin: true,
                 message_archiving: 'always',
                 loglevel: 'debug',
-                allow_logout: false
+                allow_logout: false,
+                allow_chat_pending_contacts: true,
+                allow_non_roster_messaging: true,
+                auto_reconnect: true
             });
         </script>
     </body>
