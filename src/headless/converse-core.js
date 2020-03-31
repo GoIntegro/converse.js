@@ -197,7 +197,7 @@ _converse.default_connection_options = { 'explicitResourceBinding': true };
 // Default configuration values
 // ----------------------------
 _converse.default_settings = {
-    getAuthorizationToken: function () {},
+    getAuthorizationToken: function() {},
     allow_non_roster_messaging: false,
     assets_path: '/dist',
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
@@ -870,6 +870,7 @@ function fetchLoginCredentials(wait = 0) {
         debounce((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open('GET', _converse.credentials_url, true);
+            xhr.setRequestHeader('Authorization', _converse.getAuthorizationToken());
             xhr.setRequestHeader('Accept', 'application/json, text/javascript');
             xhr.onload = () => {
                 if (xhr.status >= 200 && xhr.status < 400) {

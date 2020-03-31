@@ -2,7 +2,6 @@
 <html lang="en">
     <head>
         <title>Converse</title>
-        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> 
         <meta charset="utf-8" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -64,17 +63,20 @@
                 //     'discuss@conference.conversejs.org'
                 // ],
                 // jid: 'cristian.soto@chat.gointegro.com',
+                // prebind: true,
                 auto_login: true,
-                prebind: true,
-                authentication: 'prebind',
-                prebind_url: 'http://api.qa.go5.gointegro.net/prebind',
+                authentication: 'login',
+                credentials_url: 'http://api.qa.go5.gointegro.net/prebind',
                 enable_smacks: true,
                 persistent_store: 'IndexedDB',
                 show_send_button: true,
                 // muc_respect_autojoin: true,
                 message_archiving: 'always',
                 loglevel: 'debug',
-                allow_logout: false
+                allow_logout: false,
+                allow_chat_pending_contacts: true,
+                allow_non_roster_messaging: true,
+                auto_reconnect: true
             });
         </script>
     </body>
