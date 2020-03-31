@@ -2,7 +2,6 @@
 <html lang="en">
     <head>
         <title>Converse</title>
-        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> 
         <meta charset="utf-8" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -66,8 +65,10 @@
                 // jid: 'cristian.soto@chat.gointegro.com',
                 auto_login: true,
                 prebind: true,
-                authentication: 'prebind',
-                prebind_url: 'http://api.qa.go5.gointegro.net/prebind',
+                authentication: 'login',
+                jid: "9@18",
+                password:"12345678",
+                //prebind_url: 'http://api.qa.go5.gointegro.net/prebind',
                 enable_smacks: true,
                 persistent_store: 'IndexedDB',
                 show_send_button: true,
