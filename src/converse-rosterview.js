@@ -120,6 +120,7 @@ converse.plugins.add('converse-rosterview', {
                 };
                 const input_el = this.el.querySelector('input[name="name"]');
                 input_el.addEventListener('input', debounce(() => {
+                    xhr.setRequestHeader('Authorization', _converse.getAuthorizationToken());    
                     xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
                     xhr.send()
                 } , 300));
