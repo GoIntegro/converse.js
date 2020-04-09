@@ -179,6 +179,7 @@ converse.plugins.add('converse-rosterview', {
 
                 if (!jid && _converse.xhr_user_search_url && isString(_converse.xhr_user_search_url)) {
                     const input_el = this.el.querySelector('input[name="name"]');
+                    xhr.setRequestHeader('Authorization', _converse.getAuthorizationToken());
                     this.xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
                     this.xhr.send()
                     return;
