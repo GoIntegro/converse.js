@@ -21,51 +21,51 @@
                 initialize() {
                     const { _converse } = this;
                     window._converse = _converse;
-                }
+                },
             });
 
             converse.initialize({
-                getAuthorizationToken: function() {
-                    return 'bearer HYQZIipLuR4PdLmx580WdDhdIxoBL2sm8K0TIBt4'// + window.prompt('ingrese accessToken (sin bearer):');
+                getAuthorizationToken: function () {
+                    return 'bearer ' + window.prompt('ingrese accessToken (sin bearer):');
                 },
                 //singleton: true,
                 play_sounds: true,
-				locales: ["es", "en", "pt_BR"],
-				allow_registration: false,
-				allow_message_corrections: false,
-				allow_message_retraction: false,
-				allow_dragresize: false,
-				muc_show_join_leave: false,
-				sticky_controlbox: true,
-				auto_away: 300,
-				roster_groups: false,
-				show_client_info: false,
-				send_chat_state_notifications: ["composing"],
-				allow_contact_removal: false,
-				allow_muc: false,
-				show_toolbar: false,
-				show_send_button: true,
-				visible_toolbar_buttons: {
-					call: false,
-					spoiler: false,
-					emoji: false,
-					toggle_occupants: false,
-				},
-				bosh_service_url: "https://chat.gointegro.com/http-bind",
-				prebind: false,
-				auto_login: true,
-				authentication: "login",
-				credentials_url: "http://api.qa.go5.gointegro.net/chat/prebind",
-				enable_smacks: false,
-				persistent_store: "IndexedDB",
-				show_send_button: true,
-				message_archiving: "always",
-				loglevel: "debug",
-				allow_logout: false,
-				allow_chat_pending_contacts: true,
-				allow_non_roster_messaging: true,
+                locales: ['es', 'en', 'pt_BR'],
+                allow_registration: false,
+                allow_message_corrections: false,
+                allow_message_retraction: false,
+                allow_dragresize: false,
+                muc_show_join_leave: false,
+                sticky_controlbox: true,
+                auto_away: 300,
+                roster_groups: false,
+                show_client_info: false,
+                send_chat_state_notifications: ['composing'],
+                allow_contact_removal: false,
+                allow_muc: false,
+                show_toolbar: false,
+                show_send_button: true,
+                visible_toolbar_buttons: {
+                    call: false,
+                    spoiler: false,
+                    emoji: false,
+                    toggle_occupants: false,
+                },
+                bosh_service_url: 'https://chat.gointegro.com/http-bind',
+                prebind: false,
+                auto_login: true,
+                authentication: 'login',
+                credentials_url: 'http://api.qa.go5.gointegro.net/chat/prebind',
+                enable_smacks: false,
+                persistent_store: 'IndexedDB',
+                show_send_button: true,
+                message_archiving: 'always',
+                loglevel: 'debug',
+                allow_logout: false,
+                allow_chat_pending_contacts: true,
+                allow_non_roster_messaging: true,
                 auto_reconnect: true,
-                xhr_user_search_url: "http://api.qa.go5.gointegro.net/chat/users?"
+                xhr_user_search_url: 'http://api.qa.go5.gointegro.net/chat/users?',
             });
         </script>
     </body>
