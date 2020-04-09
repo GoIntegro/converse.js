@@ -3,38 +3,36 @@
  * @copyright 2020, the Converse.js contributors
  * @license Mozilla Public License (MPLv2)
  */
-import "@converse/headless/converse-chatboxes";
-import "@converse/headless/converse-roster";
-import "converse-modal";
-import { compact, debounce, has, isString, uniq, without } from "lodash";
-import { BootstrapModal } from "./converse-modal.js";
+import '@converse/headless/converse-chatboxes';
+import '@converse/headless/converse-roster';
+import 'converse-modal';
+import { compact, debounce, has, isString, uniq, without } from 'lodash';
+import { BootstrapModal } from './converse-modal.js';
 import { View } from 'skeletor.js/src/view.js';
 import { Model } from 'skeletor.js/src/model.js';
-import { OrderedListView } from "skeletor.js/src/overview";
-import converse from "@converse/headless/converse-core";
-import log from "@converse/headless/log";
-import tpl_add_contact_modal from "templates/add_contact_modal.js";
-import tpl_group_header from "templates/group_header.html";
-import tpl_pending_contact from "templates/pending_contact.html";
-import tpl_requesting_contact from "templates/requesting_contact.html";
-import tpl_roster from "templates/roster.html";
-import tpl_roster_filter from "templates/roster_filter.js";
-import tpl_roster_item from "templates/roster_item.html";
+import { OrderedListView } from 'skeletor.js/src/overview';
+import converse from '@converse/headless/converse-core';
+import log from '@converse/headless/log';
+import tpl_add_contact_modal from 'templates/add_contact_modal.js';
+import tpl_group_header from 'templates/group_header.html';
+import tpl_pending_contact from 'templates/pending_contact.html';
+import tpl_requesting_contact from 'templates/requesting_contact.html';
+import tpl_roster from 'templates/roster.html';
+import tpl_roster_filter from 'templates/roster_filter.js';
+import tpl_roster_item from 'templates/roster_item.html';
 
 const { Strophe } = converse.env;
 const u = converse.env.utils;
 
-
 converse.plugins.add('converse-rosterview', {
+    dependencies: ['converse-roster', 'converse-modal', 'converse-chatboxviews'],
 
-    dependencies: ["converse-roster", "converse-modal", "converse-chatboxviews"],
-
-    initialize () {
+    initialize() {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
         const { _converse } = this,
-              { __ } = _converse;
+            { __ } = _converse;
 
         _converse.api.settings.update({
             'autocomplete_add_contact': true,
@@ -53,30 +51,33 @@ converse.plugins.add('converse-rosterview', {
             'offline': __('This contact is offline'),
             'unavailable': __('This contact is unavailable'),
             'xa': __('This contact is away for an extended period'),
-            'away': __('This contact is away')
+            'away': __('This contact is away'),
         };
 
-
         _converse.AddContactModal = BootstrapModal.extend({
-            id: "add-contact-modal",
+            id: 'add-contact-modal',
             events: {
-                'submit form': 'addContactFromForm'
+                'submit form': 'addContactFromForm',
             },
 
-            initialize () {
+            initialize() {
                 BootstrapModal.prototype.initialize.apply(this, arguments);
                 this.listenTo(this.model, 'change', this.render);
             },
 
-            toHTML () {
-                const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
-                return tpl_add_contact_modal(Object.assign(this.model.toJSON(), {
-                    '_converse': _converse,
-                    'label_nickname': label_nickname,
-                }));
+            toHTML() {
+                const label_nickname = _converse.xhr_user_search_url
+                    ? __('Contact name')
+                    : __('Optional nickname');
+                return tpl_add_contact_modal(
+                    Object.assign(this.model.toJSON(), {
+                        '_converse': _converse,
+                        'label_nickname': label_nickname,
+                    })
+                );
             },
 
-            afterRender () {
+            afterRender() {
                 if (_converse.xhr_user_search_url && isString(_converse.xhr_user_search_url)) {
                     this.initXHRAutoComplete();
                 } else {
@@ -86,19 +87,21 @@ converse.plugins.add('converse-rosterview', {
                 this.el.addEventListener('shown.bs.modal', () => jid_input.focus(), false);
             },
 
-            initJIDAutoComplete () {
+            initJIDAutoComplete() {
                 if (!_converse.autocomplete_add_contact) {
                     return;
                 }
                 const el = this.el.querySelector('.suggestion-box__jid').parentElement;
                 this.jid_auto_complete = new _converse.AutoComplete(el, {
-                    'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
+                    'data': (text, input) => `${input.slice(0, input.indexOf('@'))}@${text}`,
                     'filter': _converse.FILTER_STARTSWITH,
-                    'list': uniq(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))
+                    'list': uniq(
+                        _converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid')))
+                    ),
                 });
             },
 
-            initXHRAutoComplete () {
+            initXHRAutoComplete() {
                 if (!_converse.autocomplete_add_contact) {
                     return this.initXHRFetch();
                 }
@@ -106,60 +109,75 @@ converse.plugins.add('converse-rosterview', {
                 this.name_auto_complete = new _converse.AutoComplete(el, {
                     'auto_evaluate': false,
                     'filter': _converse.FILTER_STARTSWITH,
-                    'list': []
+                    'list': [],
                 });
                 const xhr = new window.XMLHttpRequest();
                 // `open` must be called after `onload` for mock/testing purposes.
                 xhr.onload = () => {
                     if (xhr.responseText) {
                         const r = xhr.responseText;
-                        this.name_auto_complete.list = JSON.parse(r).map(i => ({'label': i.fullname || i.jid, 'value': i.jid}));
+                        this.name_auto_complete.list = JSON.parse(r).map(i => ({
+                            'label': i.fullname || i.jid,
+                            'value': i.jid,
+                        }));
                         this.name_auto_complete.auto_completing = true;
                         this.name_auto_complete.evaluate();
                     }
                 };
                 const input_el = this.el.querySelector('input[name="name"]');
-                input_el.addEventListener('input', debounce(() => {
-                    xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
-                    xhr.setRequestHeader('Authorization', _converse.getAuthorizationToken());    
-                    xhr.send()
-                } , 300));
+                input_el.addEventListener(
+                    'input',
+                    debounce(() => {
+                        xhr.open(
+                            'GET',
+                            `${_converse.xhr_user_search_url}q=${encodeURIComponent(
+                                input_el.value
+                            )}`,
+                            true
+                        );
+                        xhr.setRequestHeader('Authorization', _converse.getAuthorizationToken());
+                        xhr.send();
+                    }, 300)
+                );
                 this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
                     this.el.querySelector('input[name="name"]').value = ev.text.label;
                     this.el.querySelector('input[name="jid"]').value = ev.text.value;
                 });
             },
 
-            initXHRFetch () {
+            initXHRFetch() {
                 this.xhr = new window.XMLHttpRequest();
                 this.xhr.onload = () => {
                     if (this.xhr.responseText) {
                         const r = this.xhr.responseText;
-                        const list = JSON.parse(r).map(i => ({'label': i.fullname || i.jid, 'value': i.jid}));
+                        const list = JSON.parse(r).map(i => ({
+                            'label': i.fullname || i.jid,
+                            'value': i.jid,
+                        }));
                         if (list.length !== 1) {
                             const el = this.el.querySelector('.invalid-feedback');
-                            el.textContent = __('Sorry, could not find a contact with that name')
+                            el.textContent = __('Sorry, could not find a contact with that name');
                             u.addClass('d-block', el);
                             return;
                         }
                         const jid = list[0].value;
                         if (this.validateSubmission(jid)) {
                             const form = this.el.querySelector('form');
-                                const name = list[0].label;
+                            const name = list[0].label;
                             this.afterSubmission(form, jid, name);
                         }
                     }
                 };
             },
 
-            validateSubmission (jid) {
+            validateSubmission(jid) {
                 const el = this.el.querySelector('.invalid-feedback');
                 if (!jid || compact(jid.split('@')).length < 2) {
                     u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
                     u.addClass('d-block', el);
                     return false;
                 } else if (_converse.roster.get(Strophe.getBareJidFromJid(jid))) {
-                    el.textContent = __('This contact has already been added')
+                    el.textContent = __('This contact has already been added');
                     u.addClass('d-block', el);
                     return false;
                 }
@@ -167,37 +185,44 @@ converse.plugins.add('converse-rosterview', {
                 return true;
             },
 
-            afterSubmission (form, jid, name) {
+            afterSubmission(form, jid, name) {
                 _converse.roster.addAndSubscribe(jid, name);
                 this.model.clear();
                 this.modal.hide();
             },
 
-            addContactFromForm (ev) {
+            addContactFromForm(ev) {
                 ev.preventDefault();
                 const data = new FormData(ev.target),
-                      jid = (data.get('jid') || '').trim();
+                    jid = (data.get('jid') || '').trim();
 
-                if (!jid && _converse.xhr_user_search_url && isString(_converse.xhr_user_search_url)) {
+                if (
+                    !jid &&
+                    _converse.xhr_user_search_url &&
+                    isString(_converse.xhr_user_search_url)
+                ) {
                     const input_el = this.el.querySelector('input[name="name"]');
-                    this.xhr.open("GET", `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`, true);
+                    this.xhr.open(
+                        'GET',
+                        `${_converse.xhr_user_search_url}q=${encodeURIComponent(input_el.value)}`,
+                        true
+                    );
                     xhr.setRequestHeader('Authorization', _converse.getAuthorizationToken());
-                    this.xhr.send()
+                    this.xhr.send();
                     return;
                 }
                 if (this.validateSubmission(jid)) {
                     this.afterSubmission(ev.target, jid, data.get('name'));
                 }
-            }
+            },
         });
 
-
         _converse.RosterFilter = Model.extend({
-            initialize () {
+            initialize() {
                 this.set({
                     'filter_text': '',
                     'filter_type': 'contacts',
-                    'chat_state': 'online'
+                    'chat_state': 'online',
                 });
             },
         });
@@ -205,12 +230,12 @@ converse.plugins.add('converse-rosterview', {
         _converse.RosterFilterView = View.extend({
             tagName: 'span',
 
-            initialize () {
+            initialize() {
                 this.listenTo(this.model, 'change:filter_type', this.render);
                 this.listenTo(this.model, 'change:filter_text', this.render);
             },
 
-            toHTML () {
+            toHTML() {
                 return tpl_roster_filter(
                     Object.assign(this.model.toJSON(), {
                         visible: this.shouldBeVisible(),
@@ -231,35 +256,36 @@ converse.plugins.add('converse-rosterview', {
                         clearFilter: ev => this.clearFilter(ev),
                         liveFilter: ev => this.liveFilter(ev),
                         submitFilter: ev => this.submitFilter(ev),
-                    }));
+                    })
+                );
             },
 
-            changeChatStateFilter (ev) {
+            changeChatStateFilter(ev) {
                 ev && ev.preventDefault();
-                this.model.save({'chat_state': this.el.querySelector('.state-type').value});
+                this.model.save({ 'chat_state': this.el.querySelector('.state-type').value });
             },
 
-            changeTypeFilter (ev) {
+            changeTypeFilter(ev) {
                 ev && ev.preventDefault();
                 const type = ev.target.dataset.type;
                 if (type === 'state') {
                     this.model.save({
                         'filter_type': type,
-                        'chat_state': this.el.querySelector('.state-type').value
+                        'chat_state': this.el.querySelector('.state-type').value,
                     });
                 } else {
                     this.model.save({
                         'filter_type': type,
-                        'filter_text': this.el.querySelector('.roster-filter').value
+                        'filter_text': this.el.querySelector('.roster-filter').value,
                     });
                 }
             },
 
             liveFilter: debounce(function () {
-                this.model.save({'filter_text': this.el.querySelector('.roster-filter').value});
+                this.model.save({ 'filter_text': this.el.querySelector('.roster-filter').value });
             }, 250),
 
-            submitFilter (ev) {
+            submitFilter(ev) {
                 ev && ev.preventDefault();
                 this.liveFilter();
             },
@@ -270,61 +296,60 @@ converse.plugins.add('converse-rosterview', {
              * @private
              * @method _converse.RosterFilterView#isActive
              */
-            isActive () {
-                return (this.model.get('filter_type') === 'state' || this.model.get('filter_text'));
+            isActive() {
+                return this.model.get('filter_type') === 'state' || this.model.get('filter_text');
             },
 
-            shouldBeVisible () {
-                return _converse.roster && _converse.roster.length >= 5 || this.isActive();
+            shouldBeVisible() {
+                return (_converse.roster && _converse.roster.length >= 5) || this.isActive();
             },
 
-            clearFilter (ev) {
+            clearFilter(ev) {
                 ev && ev.preventDefault();
-                this.model.save({'filter_text': ''});
-            }
+                this.model.save({ 'filter_text': '' });
+            },
         });
-
 
         _converse.RosterContactView = _converse.ViewWithAvatar.extend({
             tagName: 'li',
             className: 'list-item d-flex hidden controlbox-padded',
 
             events: {
-                "click .accept-xmpp-request": "acceptRequest",
-                "click .decline-xmpp-request": "declineRequest",
-                "click .open-chat": "openChat",
-                "click .remove-xmpp-contact": "removeContact"
+                'click .accept-xmpp-request': 'acceptRequest',
+                'click .decline-xmpp-request': 'declineRequest',
+                'click .open-chat': 'openChat',
+                'click .remove-xmpp-contact': 'removeContact',
             },
 
-            async initialize () {
+            async initialize() {
                 await this.model.initialized;
                 this.debouncedRender = debounce(this.render, 50);
-                this.listenTo(this.model, "change", this.debouncedRender);
-                this.listenTo(this.model, "destroy", this.remove);
-                this.listenTo(this.model, "highlight", this.highlight);
-                this.listenTo(this.model, "open", this.openChat);
-                this.listenTo(this.model, "remove", this.remove);
+                this.listenTo(this.model, 'change', this.debouncedRender);
+                this.listenTo(this.model, 'destroy', this.remove);
+                this.listenTo(this.model, 'highlight', this.highlight);
+                this.listenTo(this.model, 'open', this.openChat);
+                this.listenTo(this.model, 'remove', this.remove);
                 this.listenTo(this.model, 'vcard:change', this.debouncedRender);
-                this.listenTo(this.model.presence, "change:show", this.debouncedRender);
+                this.listenTo(this.model.presence, 'change:show', this.debouncedRender);
                 this.render();
             },
 
-            render () {
+            render() {
                 if (!this.mayBeShown()) {
                     u.hideElement(this.el);
                     return this;
                 }
                 const ask = this.model.get('ask'),
                     show = this.model.presence.get('show'),
-                    requesting  = this.model.get('requesting'),
+                    requesting = this.model.get('requesting'),
                     subscription = this.model.get('subscription'),
                     jid = this.model.get('jid');
 
                 const classes_to_remove = [
                     'current-xmpp-contact',
                     'pending-xmpp-contact',
-                    'requesting-xmpp-contact'
-                    ].concat(Object.keys(STATUSES));
+                    'requesting-xmpp-contact',
+                ].concat(Object.keys(STATUSES));
                 classes_to_remove.forEach(c => u.removeClass(c, this.el));
 
                 this.el.classList.add(show);
@@ -342,7 +367,7 @@ converse.plugins.add('converse-rosterview', {
                     }
                 }
 
-                if ((ask === 'subscribe') || (subscription === 'from')) {
+                if (ask === 'subscribe' || subscription === 'from') {
                     /* ask === 'subscribe'
                      *      Means we have asked to subscribe to them.
                      *
@@ -360,7 +385,7 @@ converse.plugins.add('converse-rosterview', {
                         Object.assign(this.model.toJSON(), {
                             display_name,
                             'desc_remove': __('Click to remove %1$s as a contact', display_name),
-                            'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
+                            'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts,
                         })
                     );
                 } else if (requesting === true) {
@@ -369,12 +394,22 @@ converse.plugins.add('converse-rosterview', {
                     this.el.innerHTML = tpl_requesting_contact(
                         Object.assign(this.model.toJSON(), {
                             display_name,
-                            'desc_accept': __("Click to accept the contact request from %1$s", display_name),
-                            'desc_decline': __("Click to decline the contact request from %1$s", display_name),
-                            'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
+                            'desc_accept': __(
+                                'Click to accept the contact request from %1$s',
+                                display_name
+                            ),
+                            'desc_decline': __(
+                                'Click to decline the contact request from %1$s',
+                                display_name
+                            ),
+                            'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts,
                         })
                     );
-                } else if (subscription === 'both' || subscription === 'to' || _converse.rosterview.isSelf(jid)) {
+                } else if (
+                    subscription === 'both' ||
+                    subscription === 'to' ||
+                    _converse.rosterview.isSelf(jid)
+                ) {
                     this.el.classList.add('current-xmpp-contact');
                     this.el.classList.remove(without(['both', 'to'], subscription)[0]);
                     this.el.classList.add(subscription);
@@ -388,7 +423,7 @@ converse.plugins.add('converse-rosterview', {
              * @private
              * @method _converse.RosterContactView#highlight
              */
-            highlight () {
+            highlight() {
                 if (_converse.isUniView()) {
                     const chatbox = _converse.chatboxes.get(this.model.get('jid'));
                     if ((chatbox && chatbox.get('hidden')) || !chatbox) {
@@ -399,7 +434,7 @@ converse.plugins.add('converse-rosterview', {
                 }
             },
 
-            renderRosterItem (item) {
+            renderRosterItem(item) {
                 const show = item.presence.get('show') || 'offline';
                 let status_icon;
                 if (show === 'online') {
@@ -420,11 +455,15 @@ converse.plugins.add('converse-rosterview', {
                         display_name,
                         status_icon,
                         'desc_status': STATUSES[show],
-                        'desc_chat': __('Click to chat with %1$s (JID: %2$s)', display_name, item.get('jid')),
+                        'desc_chat': __(
+                            'Click to chat with %1$s (JID: %2$s)',
+                            display_name,
+                            item.get('jid')
+                        ),
                         'desc_remove': __('Click to remove %1$s as a contact', display_name),
                         'allow_contact_removal': _converse.allow_contact_removal,
                         'num_unread': item.get('num_unread') || 0,
-                        classes: ''
+                        classes: '',
                     })
                 );
                 this.renderAvatar();
@@ -439,13 +478,15 @@ converse.plugins.add('converse-rosterview', {
              * @private
              * @method _converse.RosterContactView#mayBeShown
              */
-            mayBeShown () {
+            mayBeShown() {
                 const chatStatus = this.model.presence.get('show');
                 if (_converse.hide_offline_users && chatStatus === 'offline') {
                     // If pending or requesting, show
-                    if ((this.model.get('ask') === 'subscribe') ||
-                            (this.model.get('subscription') === 'from') ||
-                            (this.model.get('requesting') === true)) {
+                    if (
+                        this.model.get('ask') === 'subscribe' ||
+                        this.model.get('subscription') === 'from' ||
+                        this.model.get('requesting') === true
+                    ) {
                         return true;
                     }
                     return false;
@@ -453,16 +494,24 @@ converse.plugins.add('converse-rosterview', {
                 return true;
             },
 
-            openChat (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
+            openChat(ev) {
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                }
                 const attrs = this.model.attributes;
                 _converse.api.chats.open(attrs.jid, attrs, true);
             },
 
-            async removeContact (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                if (!_converse.allow_contact_removal) { return; }
-                if (!confirm(__("Are you sure you want to remove this contact?"))) { return; }
+            async removeContact(ev) {
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                }
+                if (!_converse.allow_contact_removal) {
+                    return;
+                }
+                if (!confirm(__('Are you sure you want to remove this contact?'))) {
+                    return;
+                }
 
                 try {
                     await this.model.removeFromRoster();
@@ -474,14 +523,19 @@ converse.plugins.add('converse-rosterview', {
                     }
                 } catch (e) {
                     log.error(e);
-                    _converse.api.alert('error', __('Error'),
-                        [__('Sorry, there was an error while trying to remove %1$s as a contact.', this.model.getDisplayName())]
-                    );
+                    _converse.api.alert('error', __('Error'), [
+                        __(
+                            'Sorry, there was an error while trying to remove %1$s as a contact.',
+                            this.model.getDisplayName()
+                        ),
+                    ]);
                 }
             },
 
-            async acceptRequest (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
+            async acceptRequest(ev) {
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                }
 
                 await _converse.roster.sendContactAddIQ(
                     this.model.get('jid'),
@@ -491,14 +545,18 @@ converse.plugins.add('converse-rosterview', {
                 this.model.authorize().subscribe();
             },
 
-            declineRequest (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                const result = confirm(__("Are you sure you want to decline this contact request?"));
+            declineRequest(ev) {
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                }
+                const result = confirm(
+                    __('Are you sure you want to decline this contact request?')
+                );
                 if (result === true) {
                     this.model.unauthorize().destroy();
                 }
                 return this;
-            }
+            },
         });
 
         /**
@@ -510,7 +568,7 @@ converse.plugins.add('converse-rosterview', {
             tagName: 'div',
             className: 'roster-group hidden',
             events: {
-                "click a.group-toggle": "toggle"
+                'click a.group-toggle': 'toggle',
             },
 
             sortImmediatelyOnAdd: true,
@@ -519,51 +577,56 @@ converse.plugins.add('converse-rosterview', {
             listSelector: '.roster-group-contacts',
             sortEvent: 'presenceChanged',
 
-            initialize () {
+            initialize() {
                 OrderedListView.prototype.initialize.apply(this, arguments);
 
                 if (this.model.get('name') === _converse.HEADER_UNREAD) {
-                    this.listenTo(this.model.contacts, "change:num_unread",
+                    this.listenTo(
+                        this.model.contacts,
+                        'change:num_unread',
                         c => !this.model.get('unread_messages') && this.removeContact(c)
                     );
                 }
                 if (this.model.get('name') === _converse.HEADER_REQUESTING_CONTACTS) {
-                    this.listenTo(this.model.contacts, "change:requesting",
+                    this.listenTo(
+                        this.model.contacts,
+                        'change:requesting',
                         c => !c.get('requesting') && this.removeContact(c)
                     );
                 }
                 if (this.model.get('name') === _converse.HEADER_PENDING_CONTACTS) {
-                    this.listenTo(this.model.contacts, "change:subscription",
-                        c => (c.get('subscription') !== 'from') && this.removeContact(c)
+                    this.listenTo(
+                        this.model.contacts,
+                        'change:subscription',
+                        c => c.get('subscription') !== 'from' && this.removeContact(c)
                     );
                 }
 
-                this.listenTo(this.model.contacts, "remove", this.onRemove);
+                this.listenTo(this.model.contacts, 'remove', this.onRemove);
                 this.listenTo(_converse.roster, 'change:groups', this.onContactGroupChange);
 
                 // This event gets triggered once *all* contacts (i.e. not
                 // just this group's) have been fetched from browser
                 // storage or the XMPP server and once they've been
                 // assigned to their various groups.
-                _converse.rosterview.on(
-                    'rosterContactsFetchedAndProcessed',
-                    () => this.sortAndPositionAllItems()
+                _converse.rosterview.on('rosterContactsFetchedAndProcessed', () =>
+                    this.sortAndPositionAllItems()
                 );
             },
 
-            render () {
+            render() {
                 this.el.setAttribute('data-group', this.model.get('name'));
                 this.el.innerHTML = tpl_group_header({
                     'label_group': this.model.get('name'),
                     'desc_group_toggle': this.model.get('description'),
                     'toggle_state': this.model.get('state'),
-                    '_converse': _converse
+                    '_converse': _converse,
                 });
                 this.contacts_el = this.el.querySelector('.roster-group-contacts');
                 return this;
             },
 
-            show () {
+            show() {
                 u.showElement(this.el);
                 if (this.model.get('state') === _converse.OPENED) {
                     Object.values(this.getAll())
@@ -573,7 +636,7 @@ converse.plugins.add('converse-rosterview', {
                 return this;
             },
 
-            collapse () {
+            collapse() {
                 return u.slideIn(this.contacts_el);
             },
 
@@ -584,7 +647,7 @@ converse.plugins.add('converse-rosterview', {
              * @method _converse.RosterGroupView#filterOutContacts
              * @param { Array } contacts
              */
-            filterOutContacts (contacts=[]) {
+            filterOutContacts(contacts = []) {
                 let shown = 0;
                 this.model.contacts.forEach(contact => {
                     const contact_view = this.get(contact.get('id'));
@@ -610,28 +673,35 @@ converse.plugins.add('converse-rosterview', {
              * @param { String } q - The filter query
              * @param { String } type - The filter type
              */
-            getFilterMatches (q, type) {
+            getFilterMatches(q, type) {
                 if (q.length === 0) {
                     return [];
                 }
                 let matches;
                 q = q.toLowerCase();
                 if (type === 'state') {
-                    const sticky_groups = [_converse.HEADER_REQUESTING_CONTACTS, _converse.HEADER_UNREAD];
+                    const sticky_groups = [
+                        _converse.HEADER_REQUESTING_CONTACTS,
+                        _converse.HEADER_UNREAD,
+                    ];
                     if (sticky_groups.includes(this.model.get('name'))) {
                         // When filtering by chat state, we still want to
                         // show sticky groups, even though they don't
                         // match the state in question.
                         return [];
                     } else if (q === 'unread_messages') {
-                        matches = this.model.contacts.filter({'num_unread': 0});
+                        matches = this.model.contacts.filter({ 'num_unread': 0 });
                     } else if (q === 'online') {
-                        matches = this.model.contacts.filter(c => ["offline", "unavailable"].includes(c.presence.get('show')));
+                        matches = this.model.contacts.filter(c =>
+                            ['offline', 'unavailable'].includes(c.presence.get('show'))
+                        );
                     } else {
-                        matches = this.model.contacts.filter(c => !c.presence.get('show').includes(q));
+                        matches = this.model.contacts.filter(
+                            c => !c.presence.get('show').includes(q)
+                        );
                     }
-                } else  {
-                    matches = this.model.contacts.filter((contact) => {
+                } else {
+                    matches = this.model.contacts.filter(contact => {
                         return !contact.getDisplayName().toLowerCase().includes(q.toLowerCase());
                     });
                 }
@@ -648,7 +718,7 @@ converse.plugins.add('converse-rosterview', {
              * @param { string } q - The query to filter against
              * @param { string } type
              */
-            filter (q, type) {
+            filter(q, type) {
                 if (q === null || q === undefined) {
                     type = type || _converse.rosterview.filter_view.model.get('filter_type');
                     if (type === 'state') {
@@ -660,25 +730,29 @@ converse.plugins.add('converse-rosterview', {
                 this.filterOutContacts(this.getFilterMatches(q, type));
             },
 
-            async toggle (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
-                if (u.hasClass("fa-caret-down", icon_el)) {
-                    this.model.save({state: _converse.CLOSED});
+            async toggle(ev) {
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                }
+                const icon_el = ev.target.matches('.fa')
+                    ? ev.target
+                    : ev.target.querySelector('.fa');
+                if (u.hasClass('fa-caret-down', icon_el)) {
+                    this.model.save({ state: _converse.CLOSED });
                     await this.collapse();
-                    icon_el.classList.remove("fa-caret-down");
-                    icon_el.classList.add("fa-caret-right");
+                    icon_el.classList.remove('fa-caret-down');
+                    icon_el.classList.add('fa-caret-right');
                 } else {
-                    icon_el.classList.remove("fa-caret-right");
-                    icon_el.classList.add("fa-caret-down");
-                    this.model.save({state: _converse.OPENED});
+                    icon_el.classList.remove('fa-caret-right');
+                    icon_el.classList.add('fa-caret-down');
+                    this.model.save({ state: _converse.OPENED });
                     this.filter();
                     u.showElement(this.el);
                     u.slideOut(this.contacts_el);
                 }
             },
 
-            onContactGroupChange (contact) {
+            onContactGroupChange(contact) {
                 const in_this_group = contact.get('groups').includes(this.model.get('name'));
                 const cid = contact.get('id');
                 const in_this_overview = !this.get(cid);
@@ -689,22 +763,21 @@ converse.plugins.add('converse-rosterview', {
                 }
             },
 
-            removeContact (contact) {
+            removeContact(contact) {
                 // We suppress events, otherwise the remove event will
                 // also cause the contact's view to be removed from the
                 // "Pending Contacts" group.
-                this.model.contacts.remove(contact, {'silent': true});
+                this.model.contacts.remove(contact, { 'silent': true });
                 this.onRemove(contact);
             },
 
-            onRemove (contact) {
+            onRemove(contact) {
                 this.remove(contact.get('jid'));
                 if (this.model.contacts.length === 0) {
                     this.remove();
                 }
-            }
+            },
         });
-
 
         /**
          * @class
@@ -725,32 +798,37 @@ converse.plugins.add('converse-rosterview', {
 
             events: {
                 'click a.controlbox-heading__btn.add-contact': 'showAddContactModal',
-                'click a.controlbox-heading__btn.sync-contacts': 'syncContacts'
+                'click a.controlbox-heading__btn.sync-contacts': 'syncContacts',
             },
 
-            initialize () {
+            initialize() {
                 OrderedListView.prototype.initialize.apply(this, arguments);
 
-                this.listenTo(_converse.roster, "add", this.onContactAdded);
+                this.listenTo(_converse.roster, 'add', this.onContactAdded);
                 this.listenTo(_converse.roster, 'change:groups', this.onContactAdded);
                 this.listenTo(_converse.roster, 'change', this.onContactChange);
-                this.listenTo(_converse.roster, "destroy", this.update);
-                this.listenTo(_converse.roster, "remove", this.update);
+                this.listenTo(_converse.roster, 'destroy', this.update);
+                this.listenTo(_converse.roster, 'remove', this.update);
                 _converse.presences.on('change:show', () => {
                     this.update();
                     this.updateFilter();
                 });
 
-                this.listenTo(this.model, "reset", this.reset);
+                this.listenTo(this.model, 'reset', this.reset);
 
                 // This event gets triggered once *all* contacts (i.e. not
                 // just this group's) have been fetched from browser
                 // storage or the XMPP server and once they've been
                 // assigned to their various groups.
-                _converse.api.listen.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
+                _converse.api.listen.on(
+                    'rosterGroupsFetched',
+                    this.sortAndPositionAllItems.bind(this)
+                );
 
                 _converse.api.listen.on('rosterContactsFetched', () => {
-                    _converse.roster.each(contact => this.addRosterContact(contact, {'silent': true}));
+                    _converse.roster.each(contact =>
+                        this.addRosterContact(contact, { 'silent': true })
+                    );
                     this.update();
                     this.updateFilter();
                     this.trigger('rosterContactsFetchedAndProcessed');
@@ -758,32 +836,81 @@ converse.plugins.add('converse-rosterview', {
                 this.createRosterFilter();
             },
 
-            render () {
+            render() {
                 this.el.innerHTML = tpl_roster({
                     'allow_contact_requests': _converse.allow_contact_requests,
                     'heading_contacts': __('Contacts'),
                     'title_add_contact': __('Add a contact'),
-                    'title_sync_contacts': __('Re-sync your contacts')
+                    'title_sync_contacts': __('Re-sync your contacts'),
                 });
                 const form = this.el.querySelector('.roster-filter-form');
                 this.el.replaceChild(this.filter_view.render().el, form);
                 this.roster_el = this.el.querySelector('.roster-contacts');
+                this.initXHRAutoComplete();
                 return this;
             },
 
-            showAddContactModal (ev) {
+            initXHRAutoComplete() {
+                const el = this.el.querySelector('.suggestion-box__name').parentElement;
+                this.name_auto_complete = new _converse.AutoComplete(el, {
+                    'auto_evaluate': false,
+                    'filter': _converse.FILTER_STARTSWITH,
+                    'list': [],
+                });
+                const xhr = new window.XMLHttpRequest();
+                // `open` must be called after `onload` for mock/testing purposes.
+                xhr.onload = () => {
+                    if (xhr.responseText) {
+                        const r = xhr.responseText;
+                        this.name_auto_complete.list = JSON.parse(r).map(i => ({
+                            'label': i.fullname || i.jid,
+                            'value': i.jid,
+                        }));
+                        this.name_auto_complete.auto_completing = true;
+                        this.name_auto_complete.evaluate();
+                    }
+                };
+                const input_el = this.el.querySelector('input[name="name"]');
+                input_el.addEventListener(
+                    'input',
+                    debounce(() => {
+                        xhr.open(
+                            'GET',
+                            `${_converse.xhr_user_search_url}q=${encodeURIComponent(
+                                input_el.value
+                            )}`,
+                            true
+                        );
+                        xhr.setRequestHeader('Authorization', _converse.getAuthorizationToken());
+                        xhr.send();
+                    }, 300)
+                );
+                this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
+                    var name = ev.text.label;
+                    var jid = ev.text.value;
+
+                    _converse.roster.addAndSubscribe(jid, name);
+                    _converse.api.chats.open(jid, {}, true);
+                    // this.el.querySelector('input[name="name"]').value = ;
+                    // this.el.querySelector('input[name="jid"]').value = ev.text.value;
+                });
+            },
+
+            showAddContactModal(ev) {
                 if (this.add_contact_modal === undefined) {
-                    this.add_contact_modal = new _converse.AddContactModal({'model': new Model()});
+                    this.add_contact_modal = new _converse.AddContactModal({
+                        'model': new Model(),
+                    });
                 }
                 this.add_contact_modal.show(ev);
             },
 
-            createRosterFilter () {
+            createRosterFilter() {
                 // Create a model on which we can store filter properties
                 const model = new _converse.RosterFilter();
                 model.id = `_converse.rosterfilter-${_converse.bare_jid}`;
                 model.browserStorage = _converse.createStore(model.id);
-                this.filter_view = new _converse.RosterFilterView({model});
+                this.filter_view = new _converse.RosterFilterView({ model });
                 this.listenTo(this.filter_view.model, 'change', this.updateFilter);
                 this.filter_view.model.fetch();
             },
@@ -804,7 +931,7 @@ converse.plugins.add('converse-rosterview', {
                 }
             }, 100),
 
-            update () {
+            update() {
                 if (!u.isVisible(this.roster_el)) {
                     u.showElement(this.roster_el);
                 }
@@ -812,10 +939,10 @@ converse.plugins.add('converse-rosterview', {
                 return this;
             },
 
-            filter (query, type) {
+            filter(query, type) {
                 const views = Object.values(this.getAll());
                 // First ensure the filter is restored to its original state
-                views.forEach(v => (v.model.contacts.length > 0) && v.show().filter(''));
+                views.forEach(v => v.model.contacts.length > 0 && v.show().filter(''));
                 // Now we can filter
                 query = query.toLowerCase();
                 if (type === 'groups') {
@@ -831,7 +958,7 @@ converse.plugins.add('converse-rosterview', {
                 }
             },
 
-            async syncContacts (ev) {
+            async syncContacts(ev) {
                 ev.preventDefault();
                 u.addClass('fa-spin', ev.target);
                 _converse.roster.data.save('version', null);
@@ -840,19 +967,19 @@ converse.plugins.add('converse-rosterview', {
                 u.removeClass('fa-spin', ev.target);
             },
 
-            reset () {
+            reset() {
                 this.removeAll();
                 this.render().update();
                 return this;
             },
 
-            onContactAdded (contact) {
-                this.addRosterContact(contact)
+            onContactAdded(contact) {
+                this.addRosterContact(contact);
                 this.update();
                 this.updateFilter();
             },
 
-            onContactChange (contact) {
+            onContactChange(contact) {
                 this.update();
                 if (has(contact.changed, 'subscription')) {
                     if (contact.changed.subscription === 'from') {
@@ -880,24 +1007,24 @@ converse.plugins.add('converse-rosterview', {
              * @private
              * @param {string} name
              */
-            getGroup (name) {
-                const view =  this.get(name);
+            getGroup(name) {
+                const view = this.get(name);
                 if (view) {
                     return view.model;
                 }
-                return this.model.create({name});
+                return this.model.create({ name });
             },
 
-            addContactToGroup (contact, name, options) {
+            addContactToGroup(contact, name, options) {
                 this.getGroup(name).contacts.add(contact, options);
                 this.sortAndPositionAllItems();
             },
 
-            addExistingContact (contact, options) {
+            addExistingContact(contact, options) {
                 let groups;
                 if (_converse.roster_groups) {
                     groups = contact.get('groups');
-                    groups = (groups.length === 0) ? [_converse.HEADER_UNGROUPED] : groups;
+                    groups = groups.length === 0 ? [_converse.HEADER_UNGROUPED] : groups;
                 } else {
                     groups = [_converse.HEADER_CURRENT_CONTACTS];
                 }
@@ -907,36 +1034,48 @@ converse.plugins.add('converse-rosterview', {
                 groups.forEach(g => this.addContactToGroup(contact, g, options));
             },
 
-            isSelf (jid) {
+            isSelf(jid) {
                 return u.isSameBareJID(jid, _converse.connection.jid);
             },
 
-            addRosterContact (contact, options) {
+            addRosterContact(contact, options) {
                 const jid = contact.get('jid');
-                if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to' || this.isSelf(jid)) {
+                if (
+                    contact.get('subscription') === 'both' ||
+                    contact.get('subscription') === 'to' ||
+                    this.isSelf(jid)
+                ) {
                     this.addExistingContact(contact, options);
                 } else {
                     if (!_converse.allow_contact_requests) {
                         log.debug(
-                            `Not adding requesting or pending contact ${jid} `+
-                            `because allow_contact_requests is false`
+                            `Not adding requesting or pending contact ${jid} ` +
+                                `because allow_contact_requests is false`
                         );
                         return;
                     }
-                    if ((contact.get('ask') === 'subscribe') || (contact.get('subscription') === 'from')) {
+                    if (
+                        contact.get('ask') === 'subscribe' ||
+                        contact.get('subscription') === 'from'
+                    ) {
                         this.addContactToGroup(contact, _converse.HEADER_PENDING_CONTACTS, options);
                     } else if (contact.get('requesting') === true) {
-                        this.addContactToGroup(contact, _converse.HEADER_REQUESTING_CONTACTS, options);
+                        this.addContactToGroup(
+                            contact,
+                            _converse.HEADER_REQUESTING_CONTACTS,
+                            options
+                        );
                     }
                 }
                 return this;
-            }
+            },
         });
 
         /* -------- Event Handlers ----------- */
         _converse.api.listen.on('chatBoxesInitialized', () => {
-            function highlightRosterItem (chatbox) {
-                const contact = _converse.roster && _converse.roster.findWhere({'jid': chatbox.get('jid')});
+            function highlightRosterItem(chatbox) {
+                const contact =
+                    _converse.roster && _converse.roster.findWhere({ 'jid': chatbox.get('jid') });
                 if (contact !== undefined) {
                     contact.trigger('highlight');
                 }
@@ -945,23 +1084,30 @@ converse.plugins.add('converse-rosterview', {
             _converse.chatboxes.on('change:hidden', chatbox => highlightRosterItem(chatbox));
         });
 
-
-        _converse.api.listen.on('controlBoxInitialized', (view) => {
-            function insertRoster () {
-                if (!view.model.get('connected') || _converse.authentication === _converse.ANONYMOUS) {
+        _converse.api.listen.on('controlBoxInitialized', view => {
+            function insertRoster() {
+                if (
+                    !view.model.get('connected') ||
+                    _converse.authentication === _converse.ANONYMOUS
+                ) {
                     return;
                 }
                 /* Place the rosterview inside the "Contacts" panel. */
-                _converse.api.waitUntil('rosterViewInitialized')
-                    .then(() => view.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el))
+                _converse.api
+                    .waitUntil('rosterViewInitialized')
+                    .then(() =>
+                        view.controlbox_pane.el.insertAdjacentElement(
+                            'beforeEnd',
+                            _converse.rosterview.el
+                        )
+                    )
                     .catch(e => log.fatal(e));
             }
             insertRoster();
             view.model.on('change:connected', insertRoster);
         });
 
-
-        function initRosterView () {
+        function initRosterView() {
             /* Create an instance of RosterView once the RosterGroups
              * collection has been created (in @converse/headless/converse-core.js)
              */
@@ -969,7 +1115,7 @@ converse.plugins.add('converse-rosterview', {
                 return;
             }
             _converse.rosterview = new _converse.RosterView({
-                'model': _converse.rostergroups
+                'model': _converse.rostergroups,
             });
             _converse.rosterview.render();
             /**
@@ -990,6 +1136,5 @@ converse.plugins.add('converse-rosterview', {
                 delete converse.rosterview;
             }
         });
-    }
+    },
 });
-
