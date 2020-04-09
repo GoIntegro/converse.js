@@ -843,9 +843,14 @@ converse.plugins.add('converse-rosterview', {
                     'title_add_contact': __('Add a contact'),
                     'title_sync_contacts': __('Re-sync your contacts'),
                 });
-                const form = this.el.querySelector('.roster-filter-form');
-                this.el.replaceChild(this.filter_view.render().el, form);
+
+                // hide filters controls
+                // const form = this.el.querySelector('.roster-filter-form');
+                // this.el.replaceChild(this.filter_view.render().el, form);
+
                 this.roster_el = this.el.querySelector('.roster-contacts');
+
+                // initialize autocomplete users
                 this.initXHRAutoComplete();
                 return this;
             },
@@ -854,6 +859,7 @@ converse.plugins.add('converse-rosterview', {
                 const el = this.el.querySelector('.suggestion-box__name').parentElement;
                 this.name_auto_complete = new _converse.AutoComplete(el, {
                     'auto_evaluate': false,
+                    'min_chars': 1,
                     'filter': _converse.FILTER_STARTSWITH,
                     'list': [],
                 });
@@ -889,10 +895,11 @@ converse.plugins.add('converse-rosterview', {
                     var name = ev.text.label;
                     var jid = ev.text.value;
 
+                    // clear input value
+                    this.el.querySelector('input[name="name"]').value = '';
+
                     _converse.roster.addAndSubscribe(jid, name);
                     _converse.api.chats.open(jid, {}, true);
-                    // this.el.querySelector('input[name="name"]').value = ;
-                    // this.el.querySelector('input[name="jid"]').value = ev.text.value;
                 });
             },
 
