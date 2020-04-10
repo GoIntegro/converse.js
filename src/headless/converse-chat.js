@@ -381,10 +381,12 @@ converse.plugins.add('converse-chat', {
             },
 
             fetchMessages () {
-                if (this.messages.fetched) {
-                    log.info(`Not re-fetching messages for ${this.get('jid')}`);
-                    return;
-                }
+                // FIX: comment code for messages lost when history was fetched previusly and chatbox was closed
+
+                // if (this.messages.fetched) {
+                    // log.info(`Not re-fetching messages for ${this.get('jid')}`);
+                    // return;
+                // }
                 this.messages.fetched = u.getResolveablePromise();
                 const resolve = this.messages.fetched.resolve;
                 this.messages.fetch({
