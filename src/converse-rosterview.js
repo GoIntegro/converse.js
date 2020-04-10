@@ -834,6 +834,20 @@ converse.plugins.add('converse-rosterview', {
                     this.trigger('rosterContactsFetchedAndProcessed');
                 });
                 this.createRosterFilter();
+
+
+                _converse.api.listen.on('message', (msg) => {
+                    if (!msg.has_body) {
+                        return;
+                    }
+
+                    var jid = Strophe.getBareJidFromJid(msg.stanza.getAttribute('from'));
+                    const contact = _converse.roster && _converse.roster.findWhere({'jid': jid});
+
+                    if (contact !== undefined) {
+                        contact.save({'num_unread': contact.get('num_unread') + 1});
+                    }
+                });
             },
 
             render() {

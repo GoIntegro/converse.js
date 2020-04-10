@@ -1236,8 +1236,10 @@ converse.plugins.add('converse-chat', {
             // Get chat box, but only create when the message has something to show to the user
             const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
             const roster_nick = contact?.attributes?.nickname;
-            const chatbox = await _converse.api.chats.get(contact_jid, {'nickname': roster_nick}, has_body);
+            // FIX dont open chat in uncomming message
+            const chatbox = await _converse.api.chats.get(contact_jid, {'nickname': roster_nick, hidden: true}, false);
             chatbox && await chatbox.queueMessage(stanza, original_stanza, from_jid);
+            
             /**
              * Triggered when a message stanza is been received and processed.
              * @event _converse#message
@@ -1246,7 +1248,7 @@ converse.plugins.add('converse-chat', {
              * @property { XMLElement } stanza
              * @example _converse.api.listen.on('message', obj => { ... });
              */
-            _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': chatbox});
+            _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': chatbox, has_body: has_body});
         }
 
 
