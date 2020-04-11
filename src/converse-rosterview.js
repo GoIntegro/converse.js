@@ -100,6 +100,7 @@ converse.plugins.add('converse-rosterview', {
                     'list': uniq(
                         _converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid')))
                     ),
+                    'use_keyboard': true
                 });
             },
 

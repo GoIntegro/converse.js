@@ -111,7 +111,7 @@ converse.plugins.add("converse-autocomplete", {
 
                 this.index = -1;
 
-                this.bindEvents()
+                this.bindEvents(config)
 
                 if (this.input.hasAttribute("list")) {
                     this.list = "#" + this.input.getAttribute("list");
@@ -121,12 +121,15 @@ converse.plugins.add("converse-autocomplete", {
                 }
             }
 
-            bindEvents () {
+            bindEvents (config) {
                 // Bind events
                 const input = {
                     "blur": () => this.close({'reason': 'blur'}),
-                    "keydown": (ev) => this.onKeyDown(ev),
                 }
+                if (config['use_keyboard']) {
+                    input.keydown = (ev) => this.onKeyDown(ev);
+                }
+
                 if (this.auto_evaluate) {
                     input["input"] = () => this.evaluate();
                 }
