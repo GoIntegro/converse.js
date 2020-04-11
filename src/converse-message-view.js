@@ -16,6 +16,7 @@ import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
 import tpl_message from "templates/message.html";
 import tpl_message_versions_modal from "templates/message_versions_modal.js";
+// import tpl_spinner from "templates/go_spinner.html";
 import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
