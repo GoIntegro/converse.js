@@ -25,6 +25,7 @@ const AvatarMixin = {
             return;
         }
         if (this.model.vcard) {
+            console.log(">>> model", this.model);
             const data = {
                 'classes': avatar_el.getAttribute('class'),
                 'width': avatar_el.getAttribute('width'),
