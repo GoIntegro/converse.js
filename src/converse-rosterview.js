@@ -94,6 +94,7 @@ converse.plugins.add('converse-rosterview', {
                 }
                 const el = this.el.querySelector('.suggestion-box__jid').parentElement;
                 this.jid_auto_complete = new _converse.AutoComplete(el, {
+                    'auto_first': true,
                     'data': (text, input) => `${input.slice(0, input.indexOf('@'))}@${text}`,
                     'filter': _converse.FILTER_STARTSWITH,
                     'list': uniq(
@@ -873,6 +874,7 @@ converse.plugins.add('converse-rosterview', {
             initXHRAutoComplete() {
                 const el = this.el.querySelector('.suggestion-box__name').parentElement;
                 this.name_auto_complete = new _converse.AutoComplete(el, {
+                    'auto_first': true,
                     'auto_evaluate': false,
                     'min_chars': 1,
                     'filter': () => true,
