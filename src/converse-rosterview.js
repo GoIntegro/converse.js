@@ -875,10 +875,9 @@ converse.plugins.add('converse-rosterview', {
                 this.name_auto_complete = new _converse.AutoComplete(el, {
                     'auto_evaluate': false,
                     'min_chars': 1,
-                    'filter': _converse.FILTER_STARTSWITH,
+                    'filter': () => true,
                     'list': [],
                     renderItem: (item, input) => {
-                        
                         input = input.trim();
                         const element = document.createElement("li");
                         element.setAttribute("aria-selected", "false");

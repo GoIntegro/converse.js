@@ -346,8 +346,7 @@ converse.plugins.add("converse-autocomplete", {
                 if ((contains_trigger || value.length) && value.length >= this.min_chars) {
                     this.index = -1;
                     // Populate list with options that match
-                    this.ul.innerHTML = "";
-
+                    this.ul.innerHTML = "";                    
                     this.suggestions = list
                         .map(item => new Suggestion(this.data(item, value)))
                         .filter(item => this.filter(item, value));
