@@ -8,7 +8,8 @@ import { Overview } from "skeletor.js/src/overview";
 import { View } from "skeletor.js/src/view";
 import { result } from "lodash";
 import converse from "@converse/headless/converse-core";
-import tpl_avatar from "templates/avatar.svg";
+// import tpl_avatar from "templates/avatar.svg";
+import tpl_avatar from "templates/go_avatar.html";
 import tpl_background_logo from "templates/background_logo.html";
 import tpl_chatboxes from "templates/chatboxes.html";
 
@@ -19,7 +20,7 @@ const AvatarMixin = {
 
     renderAvatar (el) {
         el = el || this.el;
-        const avatar_el = el.querySelector('canvas.avatar, svg.avatar');
+        const avatar_el = el.querySelector('.go-avatar, canvas.avatar, svg.avatar');
         if (avatar_el === null) {
             return;
         }
@@ -31,7 +32,13 @@ const AvatarMixin = {
             }
             const image_type = this.model.vcard.get('image_type');
             const image = this.model.vcard.get('image');
+            const fullname = this.model.vcard.get('fullname') || "Unknown User";
+            const splittedFullname = fullname.split(' ');
+            const initials = splittedFullname[0].charAt(0) + splittedFullname[1].charAt(0);
             data['image'] = "data:" + image_type + ";base64," + image;
+            data['imageUrl'] = image;
+            data['initials'] = initials;
+            data['firstInitial'] = fullname.charAt(0).toLowerCase();
             avatar_el.outerHTML = tpl_avatar(data);
         }
     },
