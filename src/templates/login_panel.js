@@ -1,6 +1,7 @@
 import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
-import tpl_spinner from './spinner.js';
+// import tpl_spinner from './spinner.js';
+import tpl_spinner from './go_spinner.js';
 
 const i18n_anon_login = __('Click here to log in anonymously');
 const i18n_disconnected = __('Disconnected');
