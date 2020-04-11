@@ -62,6 +62,7 @@ converse.plugins.add("converse-autocomplete", {
 
                 this.label = o.label || o.value;
                 this.value = o.value;
+                this.raw = o.raw;
             }
 
             get lenth () {
@@ -105,7 +106,7 @@ converse.plugins.add("converse-autocomplete", {
                     'data': a => a,
                     'filter': _converse.FILTER_CONTAINS,
                     'sort': config.sort === false ? false : SORT_BYLENGTH,
-                    'item': ITEM
+                    'item': config.renderItem ? config.renderItem : ITEM
                 }, config);
 
                 this.index = -1;

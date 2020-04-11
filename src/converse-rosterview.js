@@ -876,6 +876,25 @@ converse.plugins.add('converse-rosterview', {
                     'min_chars': 1,
                     'filter': _converse.FILTER_STARTSWITH,
                     'list': [],
+                    renderItem: (item, input) => {
+                        
+                        input = input.trim();
+                        const element = document.createElement("li");
+                        element.setAttribute("aria-selected", "false");
+            
+                        const regex = new RegExp("("+input+")", "ig");
+                        const parts = input ? item.split(regex) : [item];
+                        parts.forEach((txt) => {
+                            if (input && txt.match(regex)) {
+                                const match = document.createElement("mark");
+                                match.textContent = txt;
+                                element.appendChild(match);
+                            } else {
+                                element.appendChild(document.createTextNode(txt));
+                            }
+                        });
+                        return element;
+                    }
                 });
                 const xhr = new window.XMLHttpRequest();
                 // `open` must be called after `onload` for mock/testing purposes.
@@ -885,6 +904,7 @@ converse.plugins.add('converse-rosterview', {
                         this.name_auto_complete.list = JSON.parse(r).map(i => ({
                             'label': i.fullname || i.jid,
                             'value': i.jid,
+                            'raw': i
                         }));
                         this.name_auto_complete.auto_completing = true;
                         this.name_auto_complete.evaluate();
@@ -906,8 +926,8 @@ converse.plugins.add('converse-rosterview', {
                     }, 300)
                 );
                 this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
-                    var name = ev.text.label;
-                    var jid = ev.text.value;
+                    var name = ev.text.raw.fullname;
+                    var jid = ev.text.raw.jid;
 
                     // clear input value
                     this.el.querySelector('input[name="name"]').value = '';
