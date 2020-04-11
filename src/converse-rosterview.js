@@ -15,6 +15,7 @@ import converse from '@converse/headless/converse-core';
 import log from '@converse/headless/log';
 import tpl_add_contact_modal from 'templates/add_contact_modal.js';
 import tpl_group_header from 'templates/group_header.html';
+import tpl_avatar from "templates/go_avatar.html";
 import tpl_pending_contact from 'templates/pending_contact.html';
 import tpl_requesting_contact from 'templates/requesting_contact.html';
 import tpl_roster from 'templates/roster.html';
@@ -881,7 +882,16 @@ converse.plugins.add('converse-rosterview', {
                         input = input.trim();
                         const element = document.createElement("li");
                         element.setAttribute("aria-selected", "false");
-            
+
+                        const avatarElement = document.createElement('div');
+                        const fullname = "User unknown";
+                        const splitedFullname = fullname.split(' ');
+                        const firstInitial = fullname.charAt(0);
+                        const initials = splitedFullname[0].charAt(0) + splitedFullname[1].charAt(0);
+                        const imageUrl = "";
+                        avatarElement.innerHTML = tpl_avatar({fullname, imageUrl, firstInitial, initials});
+                        element.appendChild(avatarElement);
+
                         const regex = new RegExp("("+input+")", "ig");
                         const parts = input ? item.split(regex) : [item];
                         parts.forEach((txt) => {
