@@ -22,6 +22,8 @@ import sizzle from 'sizzle';
 import stanza_utils from '@converse/headless/utils/stanza';
 import u from '@converse/headless/utils/core';
 
+import CustomStorage from '@converse/headless/utils/CustomStorage';
+
 const Strophe = strophe.default.Strophe;
 const $build = strophe.default.$build;
 const $iq = strophe.default.$iq;
@@ -372,9 +374,9 @@ function initPersistentStorage() {
     _converse.storage['persistent'] = Storage.localForage.createInstance(config);
 }
 
-_converse.createStore = function(id, storage) {
+_converse.createStore = function(id, storage, ignoreAttribs) {
     const s = _converse.storage[storage ? storage : _converse.config.get('storage')];
-    return new Storage(id, s);
+    return new CustomStorage(id, s, ignoreAttribs);
 };
 
 function initPlugins() {

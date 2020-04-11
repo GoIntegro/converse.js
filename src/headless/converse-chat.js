@@ -1131,7 +1131,7 @@ converse.plugins.add('converse-chat', {
             },
 
             clearUnreadMsgCounter () {
-                u.safeSave(this, {'num_unread': 0});
+                // u.safeSave(this, {'num_unread': 0});
             },
 
             isScrolledUp () {

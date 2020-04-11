@@ -83,7 +83,7 @@ converse.plugins.add('converse-chatboxes', {
 
             onConnected (reconnecting) {
                 if (reconnecting) { return; }
-                this.browserStorage = _converse.createStore(`converse.chatboxes-${_converse.bare_jid}`);
+                this.browserStorage = _converse.createStore(`converse.chatboxes-${_converse.bare_jid}`, undefined, ['chat_state']);
                 this.fetch({
                     'add': true,
                     'success': c => this.onChatBoxesFetched(c)
