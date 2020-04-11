@@ -99,8 +99,7 @@ converse.plugins.add('converse-rosterview', {
                     'filter': _converse.FILTER_STARTSWITH,
                     'list': uniq(
                         _converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid')))
-                    ),
-                    'use_keyboard': true
+                    )
                 });
             },
 
@@ -880,6 +879,7 @@ converse.plugins.add('converse-rosterview', {
                     'min_chars': 1,
                     'filter': () => true,
                     'list': [],
+                    'use_keyboard': true,
                     renderItem: (item, input) => {
                         input = input.trim();
                         const element = document.createElement("li");

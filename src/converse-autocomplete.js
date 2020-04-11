@@ -127,7 +127,7 @@ converse.plugins.add("converse-autocomplete", {
                     "blur": () => this.close({'reason': 'blur'}),
                 }
                 if (config['use_keyboard']) {
-                    input.keydown = (ev) => this.onKeyDown(ev);
+                    input["keydown"] = (ev) => this.onKeyDown(ev);
                 }
 
                 if (this.auto_evaluate) {
