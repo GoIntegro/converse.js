@@ -897,8 +897,9 @@ converse.plugins.add('converse-rosterview', {
                         const parts = input ? item.split(regex) : [item];
                         parts.forEach((txt) => {
                             if (input && txt.match(regex)) {
-                                const match = document.createElement("mark");
+                                const match = document.createElement("span");
                                 match.textContent = txt;
+                                match.classList.add('highlighted');
                                 element.appendChild(match);
                             } else {
                                 element.appendChild(document.createTextNode(txt));
@@ -908,7 +909,6 @@ converse.plugins.add('converse-rosterview', {
                     }
                 });
                 const xhr = new window.XMLHttpRequest();
-                // `open` must be called after `onload` for mock/testing purposes.
                 xhr.onload = () => {
                     if (xhr.responseText) {
                         const r = xhr.responseText;
@@ -925,6 +925,9 @@ converse.plugins.add('converse-rosterview', {
                 input_el.addEventListener(
                     'input',
                     debounce(() => {
+                        if (input_el.value.length == 0) {
+                            return;
+                        }
                         xhr.open(
                             'GET',
                             `${_converse.xhr_user_search_url}q=${encodeURIComponent(
