@@ -1,7 +1,8 @@
 import { html } from "lit-html";
 import { __ } from '@converse/headless/i18n';
 import { until } from 'lit-html/directives/until.js';
-import avatar from "./avatar.js";
+// import avatar from "./avatar.js";
+import avatar from "./go_avatar.js";
 
 const i18n_profile = __('The User\'s Profile Image');
 
@@ -16,6 +17,14 @@ const tpl_standalone_btns = (o) => o.standalone_btns.reverse().map(b => until(b,
 
 
 export default (o) => {
+    // assign go-avatar vars
+    o.fullname = o.fullname || "Unknown User";
+    o.imageUrl = o.image;
+    o.firstInitial = o.fullname.charAt(0).toLowerCase();
+
+    const splittedFullname = o.fullname.split(' ');
+    o.initials = splittedFullname[0].charAt(0) + splittedFullname[1].charAt(0);
+
     return html`
         <div class="chatbox-title ${ o.status ? '' :  "chatbox-title--no-desc"}">
             <div class="chatbox-title--row">

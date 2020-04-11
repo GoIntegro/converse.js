@@ -40,6 +40,13 @@ const AvatarMixin = {
             data['initials'] = initials;
             data['firstInitial'] = fullname.charAt(0).toLowerCase();
             avatar_el.outerHTML = tpl_avatar(data);
+        } else if (el.fullname && el.imageUrl !== undefined) {
+            const splittedFullname = fullname.split(' ');
+            const initials = splittedFullname[0].charAt(0) + splittedFullname[1].charAt(0);
+            data['imageUrl'] = el.imageUrl;
+            data['initials'] = initials;
+            data['firstInitial'] = fullname.charAt(0).toLowerCase();
+            avatar_el.outerHTML = tpl_avatar(data);
         }
     },
 };
