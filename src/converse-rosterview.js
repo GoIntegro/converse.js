@@ -887,6 +887,7 @@ converse.plugins.add('converse-rosterview', {
                         const avatarElement = document.createElement('div');
                         const rawData = item.raw;
                         const fullname = rawData.fullname;
+                        const jobTitle = rawData.job_title;
                         const splitedFullname = fullname.split(' ');
                         const firstInitial = fullname.charAt(0);
                         const initials = splitedFullname[0].charAt(0) + splitedFullname[1].charAt(0);
@@ -895,16 +896,28 @@ converse.plugins.add('converse-rosterview', {
                         element.appendChild(avatarElement);
                         const regex = new RegExp("("+input+")", "ig");
                         const parts = input ? item.split(regex) : [item];
+
+                        const spanContact = document.createElement("span");
+
                         parts.forEach((txt) => {
                             if (input && txt.match(regex)) {
                                 const match = document.createElement("span");
                                 match.textContent = txt;
-                                match.classList.add('highlighted');
-                                element.appendChild(match);
+                                match.classList.add('highlight');
+                                spanContact.appendChild(match);
                             } else {
-                                element.appendChild(document.createTextNode(txt));
+                                spanContact.appendChild(document.createTextNode(txt));
                             }
                         });
+                        
+                        // job title
+                        if (jobTitle) {
+                            const em = document.createElement("em");
+                            em.appendChild(document.createTextNode(jobTitle));
+                            spanContact.appendChild(em);
+                        }
+
+                        element.appendChild(spanContact);
                         return element;
                     }
                 });
