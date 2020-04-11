@@ -881,16 +881,15 @@ converse.plugins.add('converse-rosterview', {
                         input = input.trim();
                         const element = document.createElement("li");
                         element.setAttribute("aria-selected", "false");
-
                         const avatarElement = document.createElement('div');
-                        const fullname = "User unknown";
+                        const rawData = item.raw;
+                        const fullname = rawData.fullname;
                         const splitedFullname = fullname.split(' ');
                         const firstInitial = fullname.charAt(0);
                         const initials = splitedFullname[0].charAt(0) + splitedFullname[1].charAt(0);
-                        const imageUrl = "";
+                        const imageUrl = rawData.image_url;
                         avatarElement.innerHTML = tpl_avatar({fullname, imageUrl, firstInitial, initials});
                         element.appendChild(avatarElement);
-
                         const regex = new RegExp("("+input+")", "ig");
                         const parts = input ? item.split(regex) : [item];
                         parts.forEach((txt) => {
