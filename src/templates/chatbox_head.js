@@ -19,7 +19,7 @@ const tpl_standalone_btns = (o) => o.standalone_btns.reverse().map(b => until(b,
 export default (o) => {
     // assign go-avatar vars
     o.fullname = o.fullname || "Unknown User";
-    o.imageUrl = o.image;
+    // o.image = o.image;
     o.firstInitial = o.fullname.charAt(0).toLowerCase();
 
     const splittedFullname = o.fullname.split(' ');
