@@ -111,7 +111,7 @@ converse.plugins.add("converse-autocomplete", {
 
                 this.index = -1;
 
-                this.bindEvents()
+                this.bindEvents(config)
 
                 if (this.input.hasAttribute("list")) {
                     this.list = "#" + this.input.getAttribute("list");
@@ -121,11 +121,15 @@ converse.plugins.add("converse-autocomplete", {
                 }
             }
 
-            bindEvents () {
+            bindEvents (config) {
                 // Bind events
                 const input = {
-                    "blur": () => this.close({'reason': 'blur'})
+                    "blur": () => this.close({'reason': 'blur'}),
                 }
+                if (config['use_keyboard']) {
+                    input["keydown"] = (ev) => this.onKeyDown(ev);
+                }
+
                 if (this.auto_evaluate) {
                     input["input"] = () => this.evaluate();
                 }
@@ -290,7 +294,7 @@ converse.plugins.add("converse-autocomplete", {
                         return true;
                     } else if ([converse.keycodes.UP_ARROW, converse.keycodes.DOWN_ARROW].includes(ev.keyCode)) {
                         ev.preventDefault();
-                        ev.stopPropagation();
+                        ev.stopPropagation();                        
                         this[ev.keyCode === converse.keycodes.UP_ARROW ? "previous" : "next"]();
                         return true;
                     }

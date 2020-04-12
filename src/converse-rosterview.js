@@ -94,11 +94,12 @@ converse.plugins.add('converse-rosterview', {
                 }
                 const el = this.el.querySelector('.suggestion-box__jid').parentElement;
                 this.jid_auto_complete = new _converse.AutoComplete(el, {
+                    'auto_first': true,
                     'data': (text, input) => `${input.slice(0, input.indexOf('@'))}@${text}`,
                     'filter': _converse.FILTER_STARTSWITH,
                     'list': uniq(
                         _converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid')))
-                    ),
+                    )
                 });
             },
 
@@ -873,10 +874,12 @@ converse.plugins.add('converse-rosterview', {
             initXHRAutoComplete() {
                 const el = this.el.querySelector('.suggestion-box__name').parentElement;
                 this.name_auto_complete = new _converse.AutoComplete(el, {
+                    'auto_first': true,
                     'auto_evaluate': false,
                     'min_chars': 1,
                     'filter': () => true,
                     'list': [],
+                    'use_keyboard': true,
                     renderItem: (item, input) => {
                         input = input.trim();
                         const element = document.createElement("li");
@@ -884,6 +887,7 @@ converse.plugins.add('converse-rosterview', {
                         const avatarElement = document.createElement('div');
                         const rawData = item.raw;
                         const fullname = rawData.fullname;
+                        const jobTitle = rawData.job_title;
                         const splitedFullname = fullname.split(' ');
                         const firstInitial = fullname.charAt(0);
                         const initials = splitedFullname[0].charAt(0) + splitedFullname[1].charAt(0);
@@ -892,20 +896,32 @@ converse.plugins.add('converse-rosterview', {
                         element.appendChild(avatarElement);
                         const regex = new RegExp("("+input+")", "ig");
                         const parts = input ? item.split(regex) : [item];
+
+                        const spanContact = document.createElement("span");
+
                         parts.forEach((txt) => {
                             if (input && txt.match(regex)) {
-                                const match = document.createElement("mark");
+                                const match = document.createElement("span");
                                 match.textContent = txt;
-                                element.appendChild(match);
+                                match.classList.add('highlight');
+                                spanContact.appendChild(match);
                             } else {
-                                element.appendChild(document.createTextNode(txt));
+                                spanContact.appendChild(document.createTextNode(txt));
                             }
                         });
+                        
+                        // job title
+                        if (jobTitle) {
+                            const em = document.createElement("em");
+                            em.appendChild(document.createTextNode(jobTitle));
+                            spanContact.appendChild(em);
+                        }
+
+                        element.appendChild(spanContact);
                         return element;
                     }
                 });
                 const xhr = new window.XMLHttpRequest();
-                // `open` must be called after `onload` for mock/testing purposes.
                 xhr.onload = () => {
                     if (xhr.responseText) {
                         const r = xhr.responseText;
@@ -922,6 +938,9 @@ converse.plugins.add('converse-rosterview', {
                 input_el.addEventListener(
                     'input',
                     debounce(() => {
+                        if (input_el.value.length == 0) {
+                            return;
+                        }
                         xhr.open(
                             'GET',
                             `${_converse.xhr_user_search_url}q=${encodeURIComponent(

@@ -26,7 +26,10 @@
 
             converse.initialize({
                 getAuthorizationToken: function () {
-                    return 'bearer 8EvWkXlhyUqTeKJO2fziBAboIW90JgKOpoJRrDwj';
+                    return 'bearer ' + window.prompt('ingrese accessToken (sin bearer):');
+                },
+                onCloseChatControl: function () {
+                    console.log("close");
                 },
                 //singleton: true,
                 play_sounds: true,
