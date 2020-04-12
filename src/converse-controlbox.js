@@ -282,6 +282,9 @@ converse.plugins.add('converse-controlbox', {
             },
 
             async close (ev) {
+                if (_converse.onCloseChatControl) {
+                    _converse.onCloseChatControl(ev);
+                }
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (ev?.name === 'closeAllChatBoxes' &&
                         (_converse.disconnection_cause !== _converse.LOGOUT ||

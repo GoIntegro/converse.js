@@ -28,6 +28,9 @@
                 getAuthorizationToken: function () {
                     return 'bearer bcYHK2AyVMywDLyxBbXpSw9JpJJBbg5pmPEuvd8n' + window.prompt('ingrese accessToken (sin bearer):');
                 },
+                onCloseChatControl: function () {
+                    console.log("close");
+                },
                 //singleton: true,
                 play_sounds: true,
                 locales: ['es', 'en', 'pt_BR'],
