@@ -847,6 +847,7 @@ converse.plugins.add('converse-rosterview', {
                     const contact = _converse.roster && _converse.roster.findWhere({'jid': jid});
 
                     if (contact !== undefined) {
+                        _converse.onMessage(msg);
                         contact.save({'num_unread': contact.get('num_unread') + 1});
                     }
                 });
