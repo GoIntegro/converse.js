@@ -1098,6 +1098,7 @@ converse.plugins.add('converse-rosterview', {
                     groups = [_converse.HEADER_CURRENT_CONTACTS];
                 }
                 if (contact.get('num_unread')) {
+                    _converse.onUnreadMessage();
                     groups.push(_converse.HEADER_UNREAD);
                 }
                 groups.forEach(g => this.addContactToGroup(contact, g, options));

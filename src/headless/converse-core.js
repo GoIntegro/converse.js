@@ -201,6 +201,7 @@ _converse.default_settings = {
     getAuthorizationToken: function() {},
     onCloseChatControl: function() {},
     onMessage: function() {},
+    onUnreadMessage: function() {},
     allow_non_roster_messaging: false,
     assets_path: '/dist',
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
