@@ -120,7 +120,7 @@ converse.plugins.add('converse-vcard', {
                     'fullname': vcard.querySelector('FN')?.textContent,
                     'nickname': vcard.querySelector('NICKNAME')?.textContent,
                     'image': vcard.querySelector('PHOTO BINVAL')?.textContent,
-                    'image_type': vcard.querySelector('PHOTO TYPE')?.textContent || 'image/jpeg',
+                    'image_type': vcard.querySelector('PHOTO TYPE')?.textContent,
                     'url': vcard.querySelector('URL')?.textContent,
                     'role': vcard.querySelector('ROLE')?.textContent,
                     'email': vcard.querySelector('EMAIL USERID')?.textContent,
@@ -133,6 +133,7 @@ converse.plugins.add('converse-vcard', {
                 const ab = await crypto.subtle.digest('SHA-1', buffer);
                 result['image_hash'] = u.arrayBufferToHex(ab);
             }
+
             return result;
         }
 

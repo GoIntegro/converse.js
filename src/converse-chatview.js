@@ -99,6 +99,7 @@ converse.plugins.add('converse-chatview', {
             toHTML () {
                 const vcard = this.model?.vcard,
                       vcard_json = vcard ? vcard.toJSON() : {};
+
                 return tpl_user_details_modal(Object.assign(
                     this.model.toJSON(),
                     vcard_json, {
@@ -410,17 +411,21 @@ converse.plugins.add('converse-chatview', {
                 const heading_btns = this.getHeadingButtons();
                 const standalone_btns = heading_btns.filter(b => b.standalone);
                 const dropdown_btns = heading_btns.filter(b => !b.standalone);
-                return tpl_chatbox_head(
-                    Object.assign(
-                        vcard_json,
-                        this.model.toJSON(), {
-                            '_converse': _converse,
-                            'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
-                            'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b)),
-                            'display_name': this.model.getDisplayName()
-                        }
-                    )
+                const data = Object.assign(
+                    vcard_json,
+                    this.model.toJSON(), {
+                        '_converse': _converse,
+                        'dropdown_btns': dropdown_btns.map(b => this.getHeadingDropdownItem(b)),
+                        'standalone_btns': standalone_btns.map(b => this.getHeadingStandaloneButton(b)),
+                        'display_name': this.model.getDisplayName()
+                    }
                 );
+
+                // FIX toJSON error
+                data.image = vcard?.get('image');
+                data.image_type = vcard?.get('image_type');
+
+                return tpl_chatbox_head(data);
             },
 
             getHeadingButtons () {

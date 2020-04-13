@@ -35,8 +35,10 @@ const AvatarMixin = {
             const fullname = this.model.vcard.get('fullname') || "Unknown User";
             const splittedFullname = fullname.split(' ');
             const initials = splittedFullname[0].charAt(0) + splittedFullname[1].charAt(0);
-            data['image'] = "data:" + image_type + ";base64," + image;
-            data['imageUrl'] = image;
+            if (image) {
+                data['image'] = "data:" + image_type + ";base64," + image;
+            }
+            // data['imageUrl'] = image;
             data['initials'] = initials;
             data['firstInitial'] = fullname.charAt(0).toLowerCase();
             avatar_el.outerHTML = tpl_avatar(data);

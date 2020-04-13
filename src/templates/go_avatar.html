@@ -1,6 +1,9 @@
-{[ if (!o.imageUrl) {
-]}
+{[ if (!o.imageUrl && !o.image) { ]}
 <span class="letter {{{o.firstInitial}}}">{{{o.initials}}}</span>
 {[ } else { ]}
-<img src="{{{o.imageUrl}}}" alt="" height="50" title="{{{o.fullname}}}" width="50" />
+    {[ if (!o.image && o.imageUrl) { ]}
+    <img src="{{{o.imageUrl}}}" alt="" height="50" title="{{{o.fullname}}}" width="50" />
+    {[ } else { ]}
+        <img src="{{{o.image}}}" alt="" height="50" title="{{{o.fullname}}}" width="50" />
+    {[ } ]}
 {[ } ]}
