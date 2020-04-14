@@ -4,8 +4,8 @@
     <canvas class="avatar" height="30" width="30"></canvas>
     <span class="{{{o.status_icon}}}" title="{{{o.desc_status}}}"></span>
     {[ if (o.num_unread) { ]} <span class="msgs-indicator go-unread-count">{{{ o.num_unread }}}</span> {[ } ]}
-    <span class="contact-name contact-name--{{{o.show}}} {[ if (o.num_unread) { ]} unread-msgs {[ } ]}">{{{o.display_name}}}</span>
-    {[ if (o.job_title) { ]} <em>{{{ o.job_title }}}</em> {[ } ]}
+    <span class="contact-name contact-name--{{{o.show}}} {[ if (o.num_unread) { ]} unread-msgs {[ } ]}">{{{o.display_name}}}{[ if (o.job_title) { ]} <em>{{{ o.job_title }}}</em> {[ } ]}</span>
+    
 </a>
 {[ if (o.allow_contact_removal) { ]}
 <a class="list-item-action remove-xmpp-contact far fa-trash-alt" title="{{{o.desc_remove}}}" href="#"></a>
