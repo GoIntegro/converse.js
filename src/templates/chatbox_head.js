@@ -32,7 +32,7 @@ export default (o) => {
                 ${ (o.type !== o._converse.HEADLINES_TYPE) ? avatar(Object.assign({}, o, avatar_data)) : '' }
                 <div class="chatbox-title__text" title="${o.jid}">
                     ${ o.url ? html`<a href="${o.url}" target="_blank" rel="noopener" class="user">${o.display_name}</a>` : o.display_name}
-                    ${o.jobTitle ? html`<small>${o.jobTitle}</small>` : ''}   
+                    ${o.jobTitle ? html`<em>${o.jobTitle}</em>` : ''}   
                 </div>
             </div>
             <div class="chatbox-title__buttons row no-gutters">
