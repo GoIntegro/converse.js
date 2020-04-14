@@ -177,6 +177,12 @@ converse.plugins.add('converse-chat', {
                 }
             },
 
+            getJobTitle () {
+                if (this.vcard) {
+                    return this.vcard.getJobTitle();
+                }
+            },
+
             getMessageText () {
                 if (this.get('is_encrypted')) {
                     return this.get('plaintext') ||
@@ -497,6 +503,12 @@ converse.plugins.add('converse-chat', {
                     return this.vcard.getDisplayName();
                 } else {
                     return this.get('jid');
+                }
+            },
+
+            getJobTitle () {
+                if (this.vcard) {
+                    return this.vcard.getJobTitle();
                 }
             },
 

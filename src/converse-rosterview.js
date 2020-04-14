@@ -451,10 +451,12 @@ converse.plugins.add('converse-rosterview', {
                     status_icon = 'fa fa-times-circle chat-status chat-status--offline';
                 }
                 const display_name = item.getDisplayName();
+                const job_title = item.getJobTitle();
                 this.el.innerHTML = tpl_roster_item(
                     Object.assign(item.toJSON(), {
                         show,
                         display_name,
+                        job_title,
                         status_icon,
                         'desc_status': STATUSES[show],
                         'desc_chat': __(

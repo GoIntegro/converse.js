@@ -56,6 +56,12 @@ converse.plugins.add('converse-vcard', {
                 } else {
                     return this.__super__.getFullname.apply(this);
                 }
+            },
+            getJobTitle () {
+                if (this.vcard) {
+                    return this.vcard.get('title');
+                }
+                return null;
             }
         }
     },
@@ -122,6 +128,7 @@ converse.plugins.add('converse-vcard', {
                     'image': vcard.querySelector('PHOTO BINVAL')?.textContent,
                     'image_type': vcard.querySelector('PHOTO TYPE')?.textContent,
                     'url': vcard.querySelector('URL')?.textContent,
+                    'title': vcard.querySelector('TITLE')?.textContent,
                     'role': vcard.querySelector('ROLE')?.textContent,
                     'email': vcard.querySelector('EMAIL USERID')?.textContent,
                     'vcard_updated': (new Date()).toISOString(),

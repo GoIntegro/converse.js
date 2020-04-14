@@ -424,6 +424,7 @@ converse.plugins.add('converse-chatview', {
                 // FIX toJSON error
                 data.image = vcard?.get('image');
                 data.image_type = vcard?.get('image_type');
+                data.jobTitle = vcard?.get('title');
 
                 return tpl_chatbox_head(data);
             },
