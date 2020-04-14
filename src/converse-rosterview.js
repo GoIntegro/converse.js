@@ -915,9 +915,9 @@ converse.plugins.add('converse-rosterview', {
                         
                         // job title
                         if (jobTitle) {
-                            const small = document.createElement("small");
-                            small.appendChild(document.createTextNode(jobTitle));
-                            spanContact.appendChild(small);
+                            const em = document.createElement("em");
+                            em.appendChild(document.createTextNode(jobTitle));
+                            spanContact.appendChild(em);
                         }
 
                         element.appendChild(spanContact);
